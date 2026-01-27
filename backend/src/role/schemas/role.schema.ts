@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { HydratedDocument } from "mongoose"
-import { Policy, PolicySchema } from "src/policy/schemas/policy.schema"
+import { HydratedDocument, Types } from "mongoose"
+import { Policy } from "src/policy/schemas/policy.schema"
 
 export enum UserRoleEnum {
     Admin = 'admin',
@@ -17,7 +17,7 @@ export class Role {
     @Prop({ type: String, trim: true, default: '' })
     desc: string
 
-    @Prop({ type: [PolicySchema], default: [] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: Policy.name, default: [] }] })
     policy: Policy[]
 
     @Prop({ type: Boolean, default: false, index: true })
