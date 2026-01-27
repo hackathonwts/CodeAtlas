@@ -17,6 +17,18 @@ export class CreateProjectDto {
     @IsNotEmpty()
     @IsUrl({ protocols: ['http', 'https'] }, { message: 'Repository link must be a valid http/https URL.' })
     git_link?: string;
+
+    @IsOptional()
+    @MaxLength(100, { message: 'Git branch is too long. Maximum length is $constraint1 characters.' })
+    git_branch?: string;
+
+    @IsOptional()
+    @MaxLength(100, { message: 'Git username is too long. Maximum length is $constraint1 characters.' })
+    git_username?: string;
+
+    @IsOptional()
+    @MaxLength(100, { message: 'Git password is too long. Maximum length is $constraint1 characters.' })
+    git_password?: string;
 }
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {}

@@ -1,21 +1,24 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AddMemberDto, CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { IProject, Project, ProjectDocument } from './schemas/project.schema';
+import { Project, ProjectDocument } from './schemas/project.schema';
 import { Model, QueryFilter } from 'mongoose';
 import { Request } from 'express';
-import { IUser } from 'src/user/schemas/user.schema';
 import { Member, MemberDocument, ProjectRoleEnum } from './schemas/member.schema';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
 import { NotificationService } from 'src/notification/notification.service';
+import { KAFKA_CLIENT } from 'src/kafka/kafka.constants';
+import { KAFKA_TOPICS } from 'src/kafka/kafka.topics';
+import type { KafkaClient } from 'src/kafka/kafka.type';
 
 @Injectable()
 export class ProjectService {
     constructor(
         @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
         @InjectModel(Member.name) private memberModel: Model<MemberDocument>,
+        @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
-    ) {}
+    ) { }
 
     async create(createProjectDto: CreateProjectDto, user: LoggedInUser) {
         const createdProject = await new this.projectModel({
@@ -26,6 +29,20 @@ export class ProjectService {
         this.notificationService.sendWithTemplate(user._id.toString(), 'PROJECT_CREATED', {
             userName: user.full_name,
             projectName: createProjectDto.title,
+        });
+
+        this.kafkaClient.producer.send({
+            topic: KAFKA_TOPICS.PARSER_CREATE.topic,
+            messages: [
+                {
+                    key: createdProject._id.toString(),
+                    value: JSON.stringify({
+                        _id: createdProject._id,
+                        name: createProjectDto.title,
+                        description: createProjectDto.description,
+                    }),
+                },
+            ],
         });
 
         return createdProject;

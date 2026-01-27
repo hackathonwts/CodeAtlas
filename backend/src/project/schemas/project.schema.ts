@@ -59,8 +59,8 @@ export class Project {
     @Prop({ type: String, lowercase: true, unique: true, index: true })
     uuid: string;
 
-    @Prop({ type: String, required: [true, 'Scan version is required'] })
-    scan_version: string;
+    @Prop({ type: Number, default: 0 })
+    scan_version: number;
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;

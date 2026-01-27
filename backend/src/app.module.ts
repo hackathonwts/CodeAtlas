@@ -8,6 +8,7 @@ import { ChatModule } from './chat/chat.module';
 import { RoleModule } from './role/role.module';
 import { PolicyModule } from './policy/policy.module';
 import { NotificationModule } from './notification/notification.module';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
     imports: [
@@ -17,6 +18,13 @@ import { NotificationModule } from './notification/notification.module';
             useFactory: async (configService: ConfigService) => ({
                 uri: configService.get<string>('MONGODB_URI'),
                 dbName: configService.get<string>('MONGODB_DB_NAME'),
+            }),
+            inject: [ConfigService],
+        }),
+        KafkaModule.registerAsync({
+            useFactory: (configService: ConfigService) => ({
+                clientId: configService.getOrThrow<string>('KAFKA_APP_ID'),
+                brokers: [configService.getOrThrow<string>('KAFKA_BROKER_URL')],
             }),
             inject: [ConfigService],
         }),
