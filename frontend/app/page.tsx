@@ -1,19 +1,12 @@
-"use client"
-
-import { useState } from "react"
-import { ProjectsGrid } from "@/components/projects-grid"
-import { ChatInterface } from "@/components/chat-interface"
+import { Container, Heading, Text } from '@radix-ui/themes';
 
 export default function Home() {
-    const [selectedProject, setSelectedProject] = useState<string | null>(null)
-
     return (
-        <div className="flex h-screen w-full bg-background">
-            {!selectedProject ? (
-                <ProjectsGrid onSelectProject={setSelectedProject} />
-            ) : (
-                <ChatInterface projectId={selectedProject} onBack={() => setSelectedProject(null)} />
-            )}
+        <div>
+            <Container size="3">
+                <Heading size="4">Welcome to the Home Page</Heading>
+                <Text>This is a sample Next.js application using Radix UI components.</Text>
+            </Container>
         </div>
-    )
+    );
 }
