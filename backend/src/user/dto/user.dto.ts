@@ -8,7 +8,8 @@ export class CreateUserDto {
     full_name: string;
 
     @IsEmail()
-    @MaxLength(50, { message: 'Email is too long. Maximum length is $constraint1 characters.' })
+    @IsNotEmpty()
+    @MaxLength(100, { message: 'Email is too long. Maximum length is $constraint1 characters.' })
     email: string;
 
     @IsNotEmpty()
@@ -21,12 +22,13 @@ export class CreateUserDto {
 
 export class EmailVerificationDto {
     @IsNotEmpty()
-    @MaxLength(50, { message: 'Email is too long. Maximum length is $constraint1 characters.' })
+    @MaxLength(100, { message: 'Email is too long. Maximum length is $constraint1 characters.' })
     new_email: string;
 }
 
 export class emailChangeDto {
     @IsEmail()
+    @IsNotEmpty()
     @MaxLength(50, { message: 'Email is too long. Maximum length is $constraint1 characters.' })
     new_email: string;
 
