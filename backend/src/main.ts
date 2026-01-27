@@ -21,7 +21,7 @@ async function bootstrap() {
   app.useStaticAssets(resolve('./public'));
   app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: false, transform: true }));
   app.useGlobalFilters(new ApiExceptionFilter());
 
   app.use((req: Request, res: Response, next: NextFunction) => {

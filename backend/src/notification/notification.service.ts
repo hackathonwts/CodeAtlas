@@ -23,23 +23,31 @@ export class NotificationService {
     }
 
     async sendToClient(userId: string, data: Omit<INotification, '_id' | 'user_id' | 'createdAt' | 'updatedAt' | 'timestamp' | 'read'>) {
-        const subject = this.clientStreams.get(userId);
-        const notification = await this.notificationModel.create({ ...data, user_id: userId })
-        subject?.next({ data: notification } as any);
+        try {
+            const subject = this.clientStreams.get(userId);
+            const notification = await this.notificationModel.create({ ...data, user_id: userId })
+            subject?.next({ data: notification } as any);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     async sendWithTemplate(userId: string, templateKey: NotificationTemplateKey, variables: Record<string, any>) {
-        const template = await this.notificationTemplateModel.findOne({ key: templateKey, is_active: true });
-        if (!template) throw new NotFoundException(`Template with key "${templateKey}" not found or inactive`);
+        try {
+            const template = await this.notificationTemplateModel.findOne({ key: templateKey, is_active: true });
+            if (!template) throw new NotFoundException(`Template with key "${templateKey}" not found or inactive`);
 
-        const renderedTitle = this.renderTemplate(template.title, variables);
-        const renderedBody = this.renderTemplate(template.body, variables);
+            const renderedTitle = this.renderTemplate(template.title, variables);
+            const renderedBody = this.renderTemplate(template.body, variables);
 
-        return this.sendToClient(userId, {
-            title: renderedTitle,
-            body: renderedBody,
-            template: templateKey,
-        });
+            return this.sendToClient(userId, {
+                title: renderedTitle,
+                body: renderedBody,
+                template: templateKey,
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     private renderTemplate(template: string, variables: Record<string, any>): string {
