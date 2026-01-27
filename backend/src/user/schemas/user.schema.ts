@@ -31,7 +31,7 @@ export class User implements IUser {
     full_name: string;
     @Prop({ type: String, trim: true, default: '' })
     profile_image: string;
-    @Prop({ type: String, trim: true, required: true })
+    @Prop({ type: String, trim: true, lowercase: true, required: true })
     email: string;
 
     @Prop({ type: String, trim: true, default: '' })
