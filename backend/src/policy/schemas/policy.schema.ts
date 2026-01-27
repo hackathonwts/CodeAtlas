@@ -17,13 +17,16 @@ export class Policy implements IPolicy {
 export const PolicySchema = SchemaFactory.createForClass(Policy);
 export type PolicyDocument = HydratedDocument<Policy>;
 
-PolicySchema.index({ resource: 1, action: 1 }, {
-    unique: true,
-    partialFilterExpression: {
-        resource: { $exists: true, $ne: '' },
-        action: { $exists: true, $ne: '' }
-    }
-});
+PolicySchema.index(
+    { resource: 1, action: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            resource: { $exists: true, $ne: '' },
+            action: { $exists: true, $ne: '' },
+        },
+    },
+);
 PolicySchema.plugin(require('mongoose-aggregate-paginate-v2'));
 PolicySchema.set('toJSON', {
     transform: (doc, ret: Partial<PolicyDocument>) => {

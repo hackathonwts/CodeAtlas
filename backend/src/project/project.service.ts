@@ -63,7 +63,7 @@ export class ProjectService {
         const skip = (page_number - 1) * limit_number;
         const search = req.query.search as string;
 
-        let filterQuery: QueryFilter<MemberDocument> = { project_id };
+        const filterQuery: QueryFilter<MemberDocument> = { project_id };
         if (search) {
             filterQuery.$or = [{ 'user_id.full_name': { $regex: search, $options: 'i' } }, { 'user_id.email': { $regex: search, $options: 'i' } }];
         }
@@ -98,7 +98,7 @@ export class ProjectService {
         const skip = (page_number - 1) * limit_number;
         const search = req.query.search as string;
 
-        let filterQuery: QueryFilter<ProjectDocument> = { is_deleted: false };
+        const filterQuery: QueryFilter<ProjectDocument> = { is_deleted: false };
         if (search) {
             filterQuery.$or = [{ title: { $regex: '^' + search, $options: 'i' } }, { description: { $regex: '^' + search, $options: 'i' } }];
         }

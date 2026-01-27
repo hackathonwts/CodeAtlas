@@ -149,7 +149,7 @@ export class UserService {
         const search = req.query.search as string;
         const admin_role = await this.roleModel.findOne({ role: UserRoleEnum.Admin, is_deleted: false });
 
-        let filterQuery: QueryFilter<UserDocument> = { is_deleted: false };
+        const filterQuery: QueryFilter<UserDocument> = { is_deleted: false };
         if (search) {
             filterQuery.$or = [{ full_name: { $regex: '^' + search, $options: 'i' } }, { email: { $regex: '^' + search, $options: 'i' } }];
         }

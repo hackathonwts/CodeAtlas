@@ -36,7 +36,7 @@ export class ChatService {
         const skip = (page_number - 1) * limit_number;
         const search = req.query.search as string;
 
-        let filterQuery: QueryFilter<ChatDocument> = {};
+        const filterQuery: QueryFilter<ChatDocument> = {};
         if (search) {
             filterQuery.$or = [{ title: { $regex: search, $options: 'i' } }];
         }
@@ -87,7 +87,7 @@ export class ChatService {
         const skip = (page_number - 1) * limit_number;
         const search = req.query.search as string;
 
-        let filterQuery: QueryFilter<ConversationDocument> = { chat_id };
+        const filterQuery: QueryFilter<ConversationDocument> = { chat_id };
         if (search) {
             filterQuery.$or = [{ message: { $regex: search, $options: 'i' } }];
         }
