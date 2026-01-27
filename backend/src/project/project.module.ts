@@ -11,20 +11,17 @@ import { NotificationService } from 'src/notification/notification.service';
 import { NotificationTemplate, NotificationTemplateSchema } from 'src/notification/schemas/notification-template.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Project.name, schema: ProjectSchema },
-      { name: Member.name, schema: MemberSchema },
-      { name: Role.name, schema: RoleSchema },
-      { name: User.name, schema: UserSchema },
-      { name: Notification.name, schema: NotificationSchema },
-      { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
-    ]),
-  ],
-  controllers: [ProjectController],
-  providers: [
-    ProjectService,
-    NotificationService
-  ],
+    imports: [
+        MongooseModule.forFeature([
+            { name: Project.name, schema: ProjectSchema },
+            { name: Member.name, schema: MemberSchema },
+            { name: Role.name, schema: RoleSchema },
+            { name: User.name, schema: UserSchema },
+            { name: Notification.name, schema: NotificationSchema },
+            { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
+        ]),
+    ],
+    controllers: [ProjectController],
+    providers: [ProjectService, NotificationService],
 })
-export class ProjectModule { }
+export class ProjectModule {}

@@ -9,25 +9,22 @@ import { JwtStrategy } from './guards/jwt.strategy';
 import { Role, RoleSchema } from 'src/role/schemas/role.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Role.name, schema: RoleSchema }
-    ]),
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.getOrThrow('JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.getOrThrow('JWT_ACCESS_EXPIRES_IN'),
-        },
-      }),
-    })
-  ],
-  controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy
-  ],
+    imports: [
+        MongooseModule.forFeature([
+            { name: User.name, schema: UserSchema },
+            { name: Role.name, schema: RoleSchema },
+        ]),
+        JwtModule.registerAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                secret: configService.getOrThrow('JWT_SECRET'),
+                signOptions: {
+                    expiresIn: configService.getOrThrow('JWT_ACCESS_EXPIRES_IN'),
+                },
+            }),
+        }),
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, JwtStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -6,13 +6,13 @@ import { Chat, ChatSchema } from './schemas/chat.schema';
 import { Conversation, ConversationSchema } from './schemas/conversation.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Chat.name, schema: ChatSchema },
-      { name: Conversation.name, schema: ConversationSchema }
-    ]),
-  ],
-  controllers: [ChatController],
-  providers: [ChatService],
+    imports: [
+        MongooseModule.forFeature([
+            { name: Chat.name, schema: ChatSchema },
+            { name: Conversation.name, schema: ConversationSchema },
+        ]),
+    ],
+    controllers: [ChatController],
+    providers: [ChatService],
 })
-export class ChatModule { }
+export class ChatModule {}

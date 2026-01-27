@@ -1,5 +1,5 @@
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
-import type { NotificationTemplateKey } from "../schemas/notification-template.schema";
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import type { NotificationTemplateKey } from '../schemas/notification-template.schema';
 
 export class CreateNotificationTemplateDto {
     @IsEnum(['PROJECT_CREATED', 'PROJECT_UPDATED', 'PROJECT_DELETED', 'MEMBER_ADDED', 'MEMBER_REMOVED', 'USER_CREATED', 'USER_UPDATED'])

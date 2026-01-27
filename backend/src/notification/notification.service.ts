@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Subject } from "rxjs";
-import { INotification, Notification, NotificationDocument } from "./schemas/notification.schema";
-import { Model } from "mongoose";
-import { INotificationTemplate, NotificationTemplate, NotificationTemplateDocument, NotificationTemplateKey } from "./schemas/notification-template.schema";
-
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Subject } from 'rxjs';
+import { INotification, Notification, NotificationDocument } from './schemas/notification.schema';
+import { Model } from 'mongoose';
+import { INotificationTemplate, NotificationTemplate, NotificationTemplateDocument, NotificationTemplateKey } from './schemas/notification-template.schema';
 
 @Injectable()
 export class NotificationService {
@@ -12,7 +11,7 @@ export class NotificationService {
     constructor(
         @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
         @InjectModel(NotificationTemplate.name) private notificationTemplateModel: Model<NotificationTemplateDocument>,
-    ) { }
+    ) {}
 
     registerClient(clientId: string, subject: Subject<MessageEvent>) {
         this.clientStreams.set(clientId, subject);
@@ -25,7 +24,7 @@ export class NotificationService {
     async sendToClient(userId: string, data: Omit<INotification, '_id' | 'user_id' | 'createdAt' | 'updatedAt' | 'timestamp' | 'read'>) {
         try {
             const subject = this.clientStreams.get(userId);
-            const notification = await this.notificationModel.create({ ...data, user_id: userId })
+            const notification = await this.notificationModel.create({ ...data, user_id: userId });
             subject?.next({ data: notification } as any);
         } catch (error) {
             console.error(error);
@@ -57,9 +56,7 @@ export class NotificationService {
     }
 
     async getAllNotifications() {
-        return this.notificationModel.find()
-            .populate('user_id', 'full_name email')
-            .sort({ createdAt: -1 });
+        return this.notificationModel.find().populate('user_id', 'full_name email').sort({ createdAt: -1 });
     }
 
     async markAsRead(id: string) {
@@ -72,19 +69,22 @@ export class NotificationService {
 
     // Template Management Methods
 
-    async upsertTemplate(data: Partial<Omit<INotificationTemplate, '_id' | 'createdAt' | 'updatedAt'>> & { key: NotificationTemplateKey }) {
+    async upsertTemplate(
+        data: Partial<Omit<INotificationTemplate, '_id' | 'createdAt' | 'updatedAt'>> & {
+            key: NotificationTemplateKey;
+        },
+    ) {
         const templateData = {
             ...data,
             version: data.version ?? 1,
             is_active: data.is_active ?? true,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         };
 
-        return this.notificationTemplateModel.findOneAndUpdate(
-            { key: data.key },
-            templateData,
-            { new: true, upsert: true }
-        );
+        return this.notificationTemplateModel.findOneAndUpdate({ key: data.key }, templateData, {
+            new: true,
+            upsert: true,
+        });
     }
 
     async getTemplates() {
@@ -160,7 +160,7 @@ export class NotificationService {
             },
         ];
 
-        const promises = defaultTemplates.map(template => this.upsertTemplate(template));
+        const promises = defaultTemplates.map((template) => this.upsertTemplate(template));
         await Promise.all(promises);
 
         return { message: 'Default templates seeded successfully', count: defaultTemplates.length };

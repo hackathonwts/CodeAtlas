@@ -10,64 +10,64 @@ import { RequireAbacPolicy } from 'src/auth/decorators/abac.decorator';
 @Controller('project')
 @UseGuards(AuthGuard('jwt'), AbacGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) { }
+    constructor(private readonly projectService: ProjectService) {}
 
-  // Project APIs //
+    // Project APIs //
 
-  @Post()
-  @HttpCode(200)
-  @RequireAbacPolicy({ resource: 'project', action: 'create' })
-  create(@Body() createProjectDto: CreateProjectDto, @LoggedInUser() user: LoggedInUser) {
-    return this.projectService.create(createProjectDto, user);
-  }
+    @Post()
+    @HttpCode(200)
+    @RequireAbacPolicy({ resource: 'project', action: 'create' })
+    create(@Body() createProjectDto: CreateProjectDto, @LoggedInUser() user: LoggedInUser) {
+        return this.projectService.create(createProjectDto, user);
+    }
 
-  @Get()
-  @HttpCode(200)
-  @RequireAbacPolicy({ resource: 'project', action: 'read' })
-  findAll(@Req() req: Request) {
-    return this.projectService.findAll(req);
-  }
+    @Get()
+    @HttpCode(200)
+    @RequireAbacPolicy({ resource: 'project', action: 'read' })
+    findAll(@Req() req: Request) {
+        return this.projectService.findAll(req);
+    }
 
-  @Get(':id')
-  @RequireAbacPolicy({ resource: 'project', action: 'read' })
-  findOne(@Param('id') id: string) {
-    return this.projectService.findOne(id);
-  }
+    @Get(':id')
+    @RequireAbacPolicy({ resource: 'project', action: 'read' })
+    findOne(@Param('id') id: string) {
+        return this.projectService.findOne(id);
+    }
 
-  @Patch(':id')
-  @RequireAbacPolicy({ resource: 'project', action: 'update' })
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectService.update(id, updateProjectDto);
-  }
+    @Patch(':id')
+    @RequireAbacPolicy({ resource: 'project', action: 'update' })
+    update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
+        return this.projectService.update(id, updateProjectDto);
+    }
 
-  @Delete(':id')
-  @RequireAbacPolicy({ resource: 'project', action: 'delete' })
-  remove(@Param('id') id: string) {
-    return this.projectService.remove(id);
-  }
+    @Delete(':id')
+    @RequireAbacPolicy({ resource: 'project', action: 'delete' })
+    remove(@Param('id') id: string) {
+        return this.projectService.remove(id);
+    }
 
-  // Project Members APIs //
+    // Project Members APIs //
 
-  @Post(':id/members')
-  @RequireAbacPolicy({ resource: 'project-member', action: 'create' })
-  addMember(@Body() body: AddMemberDto, @Req() req: Request) {
-    return this.projectService.addMember(req.params.id as string, body);
-  }
+    @Post(':id/members')
+    @RequireAbacPolicy({ resource: 'project-member', action: 'create' })
+    addMember(@Body() body: AddMemberDto, @Req() req: Request) {
+        return this.projectService.addMember(req.params.id as string, body);
+    }
 
-  @Get(':id/members')
-  @RequireAbacPolicy({ resource: 'project-member', action: 'read' })
-  getMembers(@Param('id') id: string, @Req() req: Request) {
-    return this.projectService.getMembers(id, req);
-  }
+    @Get(':id/members')
+    @RequireAbacPolicy({ resource: 'project-member', action: 'read' })
+    getMembers(@Param('id') id: string, @Req() req: Request) {
+        return this.projectService.getMembers(id, req);
+    }
 
-  @Delete(':id/members/:member_id')
-  @RequireAbacPolicy({ resource: 'project-member', action: 'delete' })
-  removeMember(@Param('member_id') member_id: string) {
-    return this.projectService.removeMember(member_id);
-  }
+    @Delete(':id/members/:member_id')
+    @RequireAbacPolicy({ resource: 'project-member', action: 'delete' })
+    removeMember(@Param('member_id') member_id: string) {
+        return this.projectService.removeMember(member_id);
+    }
 
-  @Patch(':id/members/:member_id')
-  updateMemberPermission(@Param('member_id') member_id: string, @Body() body: AddMemberDto) {
-    return this.projectService.updateMemberPermission(member_id, body);
-  }
+    @Patch(':id/members/:member_id')
+    updateMemberPermission(@Param('member_id') member_id: string, @Body() body: AddMemberDto) {
+        return this.projectService.updateMemberPermission(member_id, body);
+    }
 }

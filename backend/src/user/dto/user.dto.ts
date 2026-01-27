@@ -1,6 +1,6 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, Max, MaxLength, MinLength, ValidateIf } from "class-validator";
-import { Policy } from "src/policy/schemas/policy.schema";
+import { PartialType } from '@nestjs/mapped-types';
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, Max, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { Policy } from 'src/policy/schemas/policy.schema';
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -52,7 +52,6 @@ export class UpdatePersonalInfoDto {
     @ValidateIf((o) => o.password !== undefined)
     old_password?: string;
 }
-
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()

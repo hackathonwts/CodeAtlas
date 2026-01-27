@@ -8,5 +8,5 @@ export interface IPolicy {
 
 export interface IPolicyConditions {
     ownership?: OwnershipCondition;
-    [resourceField: string]: | 'own' | string | number | boolean | Array<string | number | boolean> | undefined;
+    [resourceField: string]: 'own' | string | number | boolean | Array<string | number | boolean> | undefined;
 }

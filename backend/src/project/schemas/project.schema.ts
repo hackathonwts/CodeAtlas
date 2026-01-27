@@ -1,11 +1,11 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, Types } from "mongoose";
-import { User } from "src/user/schemas/user.schema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { User } from 'src/user/schemas/user.schema';
 
 export enum ProjectStatusEnum {
-    Active = "Active",
-    Inactive = "Inactive",
-    Archived = "Archived"
+    Active = 'Active',
+    Inactive = 'Inactive',
+    Archived = 'Archived',
 }
 export interface IProject {
     _id?: Types.ObjectId;
@@ -49,9 +49,9 @@ export class Project {
 export const ProjectSchema = SchemaFactory.createForClass(Project);
 export type ProjectDocument = HydratedDocument<Project>;
 
-ProjectSchema.index({ "members.user_id": 1 });
-ProjectSchema.plugin(require("mongoose-aggregate-paginate-v2"));
-ProjectSchema.set("toJSON", {
+ProjectSchema.index({ 'members.user_id': 1 });
+ProjectSchema.plugin(require('mongoose-aggregate-paginate-v2'));
+ProjectSchema.set('toJSON', {
     transform: (doc, ret: Partial<ProjectDocument>) => {
         delete ret.is_deleted;
         return ret;

@@ -8,25 +8,25 @@ import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+    constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  @HttpCode(200)
-  login(@Res() res: Response, @Body() body: LoginDto) {
-    return this.authService.login(res, body);
-  }
+    @Post('login')
+    @HttpCode(200)
+    login(@Res() res: Response, @Body() body: LoginDto) {
+        return this.authService.login(res, body);
+    }
 
-  @Post('signup')
-  @HttpCode(200)
-  signup(@Res() res: Response, @Body() body: CreateUserDto) {
-    return this.authService.signup(res, body);
-  }
+    @Post('signup')
+    @HttpCode(200)
+    signup(@Res() res: Response, @Body() body: CreateUserDto) {
+        return this.authService.signup(res, body);
+    }
 
-  @Post('logout')
-  @HttpCode(200)
-  @UseGuards(AuthGuard('jwt'))
-  logout(@Res() res: Response) {
-    res.clearCookie(ADMIN_AUTH_TOKEN_NAME);
-    return res.send({ message: 'Logout successful' });
-  }
+    @Post('logout')
+    @HttpCode(200)
+    @UseGuards(AuthGuard('jwt'))
+    logout(@Res() res: Response) {
+        res.clearCookie(ADMIN_AUTH_TOKEN_NAME);
+        return res.send({ message: 'Logout successful' });
+    }
 }

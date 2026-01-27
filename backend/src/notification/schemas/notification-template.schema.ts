@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type NotificationTemplateKey = 'PROJECT_CREATED' | 'PROJECT_UPDATED' | 'PROJECT_DELETED' | 'MEMBER_ADDED' | 'MEMBER_REMOVED' | 'USER_CREATED' | 'USER_UPDATED';
 
@@ -24,10 +24,20 @@ export class NotificationTemplate {
     @Prop({ type: Number, default: 1 })
     version: number;
 
-    @Prop({ type: String, required: [true, 'Title is required'], trim: true, maxLength: [100, 'Title cannot exceed 100 characters'] })
+    @Prop({
+        type: String,
+        required: [true, 'Title is required'],
+        trim: true,
+        maxLength: [100, 'Title cannot exceed 100 characters'],
+    })
     title: string;
 
-    @Prop({ type: String, required: [true, 'Body is required'], trim: true, maxLength: [500, 'Body cannot exceed 500 characters'] })
+    @Prop({
+        type: String,
+        required: [true, 'Body is required'],
+        trim: true,
+        maxLength: [500, 'Body cannot exceed 500 characters'],
+    })
     body: string;
 
     @Prop({ type: Boolean, default: true })
@@ -40,5 +50,5 @@ export type NotificationTemplateDocument = HydratedDocument<NotificationTemplate
 NotificationTemplateSchema.set('toJSON', {
     transform: (doc, ret: Partial<NotificationTemplateDocument>) => {
         return ret;
-    }
+    },
 });

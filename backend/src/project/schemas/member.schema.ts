@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, Types, Schema as MongoSchema } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types, Schema as MongoSchema } from 'mongoose';
 
 export enum ProjectRoleEnum {
-    Admin = "admin",
-    Member = "member"
+    Admin = 'admin',
+    Member = 'member',
 }
 
 export interface IMember {
@@ -31,8 +31,8 @@ export class Member {
 
 export const MemberSchema = SchemaFactory.createForClass(Member);
 export type MemberDocument = HydratedDocument<Member>;
-MemberSchema.plugin(require("mongoose-aggregate-paginate-v2"));
-MemberSchema.set("toJSON", {
+MemberSchema.plugin(require('mongoose-aggregate-paginate-v2'));
+MemberSchema.set('toJSON', {
     transform: (doc, ret: Partial<MemberDocument>) => {
         return ret;
     },

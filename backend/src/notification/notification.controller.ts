@@ -1,15 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Sse, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Sse, UseGuards } from '@nestjs/common';
 import { Observable, Subject } from 'rxjs';
-import { NotificationService } from "./notification.service";
-import { AuthGuard } from "@nestjs/passport";
-import { AbacGuard } from "src/auth/guards/abac.guard";
-import { RequireAbacPolicy } from "src/auth/decorators/abac.decorator";
-import { NotificationTemplateKey } from "./schemas/notification-template.schema";
-import { CreateNotificationTemplateDto } from "./dto/notification-template.dto";
+import { NotificationService } from './notification.service';
+import { AuthGuard } from '@nestjs/passport';
+import { AbacGuard } from 'src/auth/guards/abac.guard';
+import { RequireAbacPolicy } from 'src/auth/decorators/abac.decorator';
+import { NotificationTemplateKey } from './schemas/notification-template.schema';
+import { CreateNotificationTemplateDto } from './dto/notification-template.dto';
 
 @Controller('notification')
 export class NotificationController {
-    constructor(private readonly notificationService: NotificationService) { }
+    constructor(private readonly notificationService: NotificationService) {}
 
     @Sse('stream')
     streamForClient(@Query('clientId') clientId: string) {

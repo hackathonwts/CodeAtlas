@@ -9,47 +9,47 @@ import { AddPoliciesToRoleDto, RemovePoliciesFromRoleDto } from 'src/policy/dto/
 @Controller('role')
 @UseGuards(AuthGuard('jwt'), AbacGuard)
 export class RoleController {
-  constructor(private readonly roleService: RoleService) { }
+    constructor(private readonly roleService: RoleService) {}
 
-  @Post()
-  @RequireAbacPolicy({ resource: 'role', action: 'create' })
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.roleService.create(createRoleDto);
-  }
+    @Post()
+    @RequireAbacPolicy({ resource: 'role', action: 'create' })
+    create(@Body() createRoleDto: CreateRoleDto) {
+        return this.roleService.create(createRoleDto);
+    }
 
-  @Get()
-  @RequireAbacPolicy({ resource: 'role', action: 'read' })
-  findAll() {
-    return this.roleService.findAll();
-  }
+    @Get()
+    @RequireAbacPolicy({ resource: 'role', action: 'read' })
+    findAll() {
+        return this.roleService.findAll();
+    }
 
-  @Get(':id')
-  @RequireAbacPolicy({ resource: 'role', action: 'read' })
-  findOne(@Param('id') id: string) {
-    return this.roleService.findOne(id);
-  }
+    @Get(':id')
+    @RequireAbacPolicy({ resource: 'role', action: 'read' })
+    findOne(@Param('id') id: string) {
+        return this.roleService.findOne(id);
+    }
 
-  @Patch(':id')
-  @RequireAbacPolicy({ resource: 'role', action: 'update' })
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.roleService.update(id, updateRoleDto);
-  }
+    @Patch(':id')
+    @RequireAbacPolicy({ resource: 'role', action: 'update' })
+    update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+        return this.roleService.update(id, updateRoleDto);
+    }
 
-  @Delete(':id')
-  @RequireAbacPolicy({ resource: 'role', action: 'delete' })
-  remove(@Param('id') id: string) {
-    return this.roleService.remove(id);
-  }
+    @Delete(':id')
+    @RequireAbacPolicy({ resource: 'role', action: 'delete' })
+    remove(@Param('id') id: string) {
+        return this.roleService.remove(id);
+    }
 
-  @Post(':id/policies')
-  @RequireAbacPolicy({ resource: 'role', action: 'update' })
-  addPolicies(@Param('id') id: string, @Body() addPoliciesToRoleDto: AddPoliciesToRoleDto) {
-    return this.roleService.addPolicies(id, addPoliciesToRoleDto);
-  }
+    @Post(':id/policies')
+    @RequireAbacPolicy({ resource: 'role', action: 'update' })
+    addPolicies(@Param('id') id: string, @Body() addPoliciesToRoleDto: AddPoliciesToRoleDto) {
+        return this.roleService.addPolicies(id, addPoliciesToRoleDto);
+    }
 
-  @Delete(':id/policies')
-  @RequireAbacPolicy({ resource: 'role', action: 'update' })
-  removePolicies(@Param('id') id: string, @Body() removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
-    return this.roleService.removePolicies(id, removePoliciesFromRoleDto);
-  }
+    @Delete(':id/policies')
+    @RequireAbacPolicy({ resource: 'role', action: 'update' })
+    removePolicies(@Param('id') id: string, @Body() removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
+        return this.roleService.removePolicies(id, removePoliciesFromRoleDto);
+    }
 }

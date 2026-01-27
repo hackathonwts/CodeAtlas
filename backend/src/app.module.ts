@@ -10,28 +10,25 @@ import { PolicyModule } from './policy/policy.module';
 import { NotificationModule } from './notification/notification.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-        dbName: configService.get<string>('MONGODB_DB_NAME'),
-      }),
-      inject: [ConfigService],
-    }),
-    AuthModule,
-    RoleModule,
-    PolicyModule,
-    UserModule,
-    ProjectModule,
-    ChatModule,
-    NotificationModule,
-  ],
-  controllers: [],
-  providers: [
-    ConfigService,
-    Logger
-  ]
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                uri: configService.get<string>('MONGODB_URI'),
+                dbName: configService.get<string>('MONGODB_DB_NAME'),
+            }),
+            inject: [ConfigService],
+        }),
+        AuthModule,
+        RoleModule,
+        PolicyModule,
+        UserModule,
+        ProjectModule,
+        ChatModule,
+        NotificationModule,
+    ],
+    controllers: [],
+    providers: [ConfigService, Logger],
 })
-export class AppModule { }
+export class AppModule {}

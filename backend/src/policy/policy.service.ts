@@ -14,16 +14,14 @@ export class PolicyService implements OnModuleInit {
         private readonly metadataScanner: MetadataScanner,
         private readonly reflector: Reflector,
         @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
-    ) { }
+    ) {}
 
     onModuleInit() {
         this.scanControllers();
     }
 
     async findAll() {
-        return this.policyModel.find()
-            .select('-__v -createdAt -updatedAt')
-            .exec();
+        return this.policyModel.find().select('-__v -createdAt -updatedAt').exec();
     }
 
     getPermissions() {
@@ -44,26 +42,22 @@ export class PolicyService implements OnModuleInit {
 
             const resource = this.normalizeResource(controllerPath);
 
-            this.metadataScanner.scanFromPrototype(
-                instance,
-                Object.getPrototypeOf(instance),
-                (methodName) => {
-                    const methodRef = instance[methodName];
+            this.metadataScanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), (methodName) => {
+                const methodRef = instance[methodName];
 
-                    const routePath = this.reflector.get<string>(PATH_METADATA, methodRef);
-                    const requestMethod = this.reflector.get<number>(METHOD_METADATA, methodRef);
+                const routePath = this.reflector.get<string>(PATH_METADATA, methodRef);
+                const requestMethod = this.reflector.get<number>(METHOD_METADATA, methodRef);
 
-                    if (routePath === undefined || requestMethod === undefined) return;
+                if (routePath === undefined || requestMethod === undefined) return;
 
-                    const action = this.mapHttpMethodToAction(requestMethod, routePath);
-                    if (!action) return;
+                const action = this.mapHttpMethodToAction(requestMethod, routePath);
+                if (!action) return;
 
-                    this.permissions.push({
-                        resource,
-                        action,
-                    });
-                },
-            );
+                this.permissions.push({
+                    resource,
+                    action,
+                });
+            });
         }
         this.permissions = this.uniquePermissions(this.permissions);
     }
@@ -85,10 +79,7 @@ export class PolicyService implements OnModuleInit {
     }
 
     private normalizeResource(path: string): string {
-        return path
-            .replace(/^\//, '')
-            .replace(/\/.*/, '')
-            .toLowerCase();
+        return path.replace(/^\//, '').replace(/\/.*/, '').toLowerCase();
     }
 
     private uniquePermissions(list: { resource: string; action: string }[]) {

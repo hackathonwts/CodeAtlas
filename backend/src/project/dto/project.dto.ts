@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsMongoId, IsNotEmpty, IsOptional, IsUrl, MaxLength } from "class-validator";
+import { IsMongoId, IsNotEmpty, IsOptional, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateProjectDto {
     @IsNotEmpty()
@@ -19,7 +19,7 @@ export class CreateProjectDto {
     git_link?: string;
 }
 
-export class UpdateProjectDto extends PartialType(CreateProjectDto) { }
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}
 
 export class AddMemberDto {
     @IsNotEmpty()

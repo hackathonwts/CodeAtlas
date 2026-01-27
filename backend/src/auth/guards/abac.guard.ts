@@ -13,7 +13,7 @@ export interface AbacPolicy {
 
 @Injectable()
 export class AbacGuard implements CanActivate {
-    constructor(private reflector: Reflector) { }
+    constructor(private reflector: Reflector) {}
 
     canActivate(context: ExecutionContext): boolean {
         const requiredPolicy = this.reflector.get<AbacPolicy>(ABAC_POLICY_KEY, context.getHandler());
@@ -54,20 +54,13 @@ export class AbacGuard implements CanActivate {
     }
 
     private findMatchingPolicy(policies: AbacPolicy[], required: AbacPolicy): AbacPolicy | null {
-        return (
-            policies.find((p) => p.resource === required.resource && p.action === required.action) || null
-        );
+        return policies.find((p) => p.resource === required.resource && p.action === required.action) || null;
     }
 
     private checkConditions(requiredPolicy: AbacPolicy, matchingPolicy: AbacPolicy, request: Request, user: LoggedInUser): boolean {
         if (!requiredPolicy.conditions) return true;
 
-        return this.evaluateConditions(
-            requiredPolicy.conditions,
-            matchingPolicy.conditions || {},
-            request,
-            user,
-        );
+        return this.evaluateConditions(requiredPolicy.conditions, matchingPolicy.conditions || {}, request, user);
     }
 
     private evaluateConditions(requiredConditions: Record<string, any>, policyConditions: Record<string, any>, request: Request, user: LoggedInUser): boolean {

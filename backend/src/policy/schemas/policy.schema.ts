@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
-import type { IPolicy, IPolicyConditions } from "../policy.interface";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+import type { IPolicy, IPolicyConditions } from '../policy.interface';
 
 @Schema({ timestamps: true, versionKey: false })
 export class Policy implements IPolicy {
@@ -8,7 +8,7 @@ export class Policy implements IPolicy {
     resource: string;
 
     @Prop({ type: String, required: true })
-    action: string
+    action: string;
 
     @Prop({ type: Object, default: {} })
     conditions?: IPolicyConditions;
@@ -23,5 +23,5 @@ PolicySchema.set('toJSON', {
     transform: (doc, ret: Partial<PolicyDocument>) => {
         delete ret.__v;
         return ret;
-    }
+    },
 });
