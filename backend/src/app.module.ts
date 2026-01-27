@@ -1,18 +1,21 @@
 import { Logger, Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { ProjectModule } from './project/project.module';
-import { ChatModule } from './chat/chat.module';
-import { RoleModule } from './role/role.module';
-import { PolicyModule } from './policy/policy.module';
-import { NotificationModule } from './notification/notification.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ProjectModule } from './modules/project/project.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { RoleModule } from './modules/role/role.module';
+import { PolicyModule } from './modules/policy/policy.module';
+import { NotificationModule } from './modules/notification/notification.module';
 import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
     imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
+        ConfigModule.forRoot({
+            isGlobal: true,
+            envFilePath: '.env.development'
+        }),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
