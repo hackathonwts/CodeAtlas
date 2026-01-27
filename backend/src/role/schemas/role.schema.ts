@@ -17,12 +17,6 @@ export class Role {
     @Prop({ type: String, trim: true, default: '' })
     desc: string
 
-    @Prop({ type: [String], default: [] })
-    permissions: string[]
-
-    @Prop({ type: [String], default: [] })
-    blocked_features: string[]
-
     @Prop({ type: [PolicySchema], default: [] })
     policy: Policy[]
 
