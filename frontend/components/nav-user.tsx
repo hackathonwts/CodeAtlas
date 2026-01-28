@@ -45,7 +45,7 @@ export function NavUser({ user }: { user: IUser }) {
     const handleSwitchRole = async (roleId: string) => {
         const userWithNewRole = await safeAsync(async () => switchUserRoleApi(roleId))
         if(userWithNewRole) {
-            router.push('/');
+            router.push('/login');
             dispatch(setUser(userWithNewRole))
             setIsRolesDialogOpen(false);
         }

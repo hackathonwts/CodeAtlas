@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <Theme accentColor="blue" grayColor="sand" radius="large" scaling="95%">
-                    <AuthProvider>{children}</AuthProvider>
+                    {children}
                     <ThemePanel defaultOpen={false} />
                 </Theme>
                 <Toaster richColors position="top-center" />
