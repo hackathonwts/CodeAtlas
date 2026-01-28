@@ -6,13 +6,14 @@ import { ThemeProvider } from 'next-themes';
 import { store } from '../store/store';
 import { setUser, setLoading } from '../store/authSlice';
 import type { RootState } from '../store/store';
-import { toast } from 'sonner';
 import { meApi } from '../utils/apis/auth-api';
+import ServerDownPage from '@/components/server-down';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [serverDown, setServerDown] = useState(false);
 
     useEffect(() => {
         const initAuth = async () => {
@@ -22,7 +23,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
                     const result = await meApi();
                     dispatch(setUser(result.data));
                 } catch (error: any) {
-                    toast.error('Session expired. Please log in again.');
+                    setServerDown(true);
                 } finally {
                     dispatch(setLoading(false));
                 }
@@ -31,6 +32,10 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         };
         initAuth();
     }, [dispatch, user]);
+
+    if (serverDown) {
+        return <ServerDownPage />;
+    }
 
     if (!isInitialized) {
         return (
