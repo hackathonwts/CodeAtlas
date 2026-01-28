@@ -14,41 +14,43 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { IProject } from '@/interfaces/project.interface';
-
-interface ProjectFormData {
-    title: string;
-    description?: string;
-    language?: string;
-    git_link: string;
-}
+import { CreateProjectPayload } from '@/app/utils/apis/projects-api';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface ProjectDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (data: ProjectFormData) => Promise<void>;
+    onSubmit: (data: CreateProjectPayload) => Promise<void>;
     project?: IProject | null;
     isLoading?: boolean;
 }
 
 export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading = false }: ProjectDialogProps) {
+    const [showPassword, setShowPassword] = React.useState(false)
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<ProjectFormData>({
+    } = useForm<CreateProjectPayload>({
         defaultValues: project
             ? {
                   title: project.title,
                   description: project.description || '',
                   language: project.language || '',
                   git_link: project.git_link || '',
+                  git_username: project.git_username || '',
+                  git_password: project.git_password || '',
+                  git_branch: project.git_branch || '',
               }
             : {
                   title: '',
                   description: '',
                   language: '',
                   git_link: '',
+                  git_username: '',
+                  git_password: '',
+                  git_branch: '',
               },
     });
 
@@ -70,7 +72,7 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
         }
     }, [project, reset]);
 
-    const onFormSubmit = async (data: ProjectFormData) => {
+    const onFormSubmit = async (data: CreateProjectPayload) => {
         await onSubmit(data);
         reset();
     };
@@ -126,6 +128,46 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
                                 placeholder="https://github.com/username/repo"
                             />
                             {errors.git_link && <span className="text-sm text-red-500">{errors.git_link.message}</span>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="git_username">Git Username <span className="text-red-500">*</span></Label>
+                            <Input
+                                id="git_username"
+                                autoComplete='off'
+                                {...register('git_username')}
+                                placeholder="Enter Git username"
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="git_password">Git Password <span className="text-red-500">*</span></Label>
+                            <div className="relative">
+                                <Input
+                                    id="git_password"
+                                    type={showPassword ? "text" : "password"}
+                                    autoComplete='off'
+                                    {...register('git_password')}
+                                    placeholder="Enter Git password"
+                                    className="pr-10"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="git_branch">Git Branch <span className="text-red-500">*</span></Label>
+                            <Input
+                                id="git_branch"
+                                {...register('git_branch')}
+                                placeholder="e.g., main, master"
+                            />
                         </div>
                     </div>
                     <DialogFooter>

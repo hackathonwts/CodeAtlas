@@ -23,7 +23,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
                     const result = await meApi();
                     dispatch(setUser(result.data));
                 } catch (error: any) {
-                    setServerDown(true);
+                    setServerDown(parseInt(error?.status) >= 500);
                 } finally {
                     dispatch(setLoading(false));
                 }
