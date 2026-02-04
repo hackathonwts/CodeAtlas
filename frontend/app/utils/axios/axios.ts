@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { CONSTANTS } from '../constants/constants';
 import { ApiError } from '../error-handler';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -26,13 +25,14 @@ api.interceptors.response.use(
         return response;
     },
     (error: AxiosError) => {
-        let message = 'Something went wrong';
-        let status: number | undefined;
-        let data: any;
+        let message = error?.message || 'Something went wrong';
+        let status: number | undefined = error?.code === "ERR_NETWORK" ? 500 : undefined;
+        let data: any = undefined;
+
         if (error.response) {
             status = error.response.status;
             data = error.response.data;
-            message = (data as any)?.message || (data as any)?.error || error.message || 'Request failed';
+            message = data?.message || data?.error || error.message || 'Request failed';
             switch (error.response.status) {
                 case 401:
                     if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
@@ -40,17 +40,17 @@ api.interceptors.response.use(
                     }
                     break;
                 case 403:
-                    console.error('Access forbidden');
+                    console.error('Access forbidden', message, status, data);
                     break;
                 case 404:
-                    console.error('Resource not found');
+                    console.error('Resource not found', message, status, data);
                     break;
                 case 500:
-                    console.error('Server error');
+                    console.error('Server error', message, status, data);
                     break;
             }
         } else if (error.request) {
-            console.error('No response from server');
+            console.error('No response from server', error.message);
         } else {
             console.error('Error setting up request:', error.message);
         }

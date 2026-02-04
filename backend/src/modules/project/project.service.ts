@@ -10,12 +10,14 @@ import { NotificationService } from 'src/modules/notification/notification.servi
 import { KAFKA_CLIENT } from 'src/kafka/kafka.constants';
 import { KAFKA_TOPICS } from 'src/kafka/kafka.topics';
 import type { KafkaClient } from 'src/kafka/kafka.type';
+import { Chat, ChatDocument } from '../chat/schemas/chat.schema';
 
 @Injectable()
 export class ProjectService {
     constructor(
         @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
         @InjectModel(Member.name) private memberModel: Model<MemberDocument>,
+        @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
         @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
     ) { }
@@ -147,6 +149,7 @@ export class ProjectService {
 
     remove(id: string) {
         this.memberModel.deleteMany({ project_id: id }).exec();
+        this.chatModel.deleteMany({ project_id: id }).exec();
         return this.projectModel.findOneAndDelete({ _id: id });
     }
 }

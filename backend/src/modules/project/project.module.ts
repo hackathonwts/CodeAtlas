@@ -9,6 +9,7 @@ import { Member, MemberSchema } from './schemas/member.schema';
 import { NotificationSchema, Notification } from 'src/modules/notification/schemas/notification.schema';
 import { NotificationService } from 'src/modules/notification/notification.service';
 import { NotificationTemplate, NotificationTemplateSchema } from 'src/modules/notification/schemas/notification-template.schema';
+import { Chat, ChatSchema } from '../chat/schemas/chat.schema';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { NotificationTemplate, NotificationTemplateSchema } from 'src/modules/no
             { name: User.name, schema: UserSchema },
             { name: Notification.name, schema: NotificationSchema },
             { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
+            { name: Chat.name, schema: ChatSchema },
         ]),
     ],
     controllers: [ProjectController],
