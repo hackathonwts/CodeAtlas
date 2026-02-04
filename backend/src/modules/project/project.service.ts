@@ -147,6 +147,6 @@ export class ProjectService {
 
     remove(id: string) {
         this.memberModel.deleteMany({ project_id: id }).exec();
-        return this.projectModel.findByIdAndUpdate(id, { is_deleted: true, updatedAt: new Date() }, { new: true });
+        return this.projectModel.findOneAndDelete({ _id: id });
     }
 }
