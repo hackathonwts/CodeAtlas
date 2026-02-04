@@ -7,6 +7,20 @@ export enum ProjectStatusEnum {
     Inactive = 'Inactive',
     Archived = 'Archived',
 }
+
+export enum WorkflowStatus {
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
+    FAILED = 'FAILED',
+    COMPLETED = 'COMPLETED',
+}
+
+export enum WorkflowStep {
+    CLONING = 'CLONING',
+    PARSING = 'PARSING',
+    PARSING_COMPLETED = 'PARSING_COMPLETED',
+}
+
 export interface IProject {
     _id?: Types.ObjectId;
 
@@ -37,35 +51,34 @@ export class Project {
 
     @Prop({ type: String, default: '' })
     title: string;
-
     @Prop({ type: String, default: '' })
     description: string;
-
     @Prop({ type: String, default: '' })
     language: string;
 
     @Prop({ type: String, required: true, unique: [true, 'Project with this git link already exists'], index: true })
     git_link: string;
-
     @Prop({ type: String, required: [true, 'Git username is required'] })
     git_username: string;
-
     @Prop({ type: String, required: [true, 'Git password is required'] })
     git_password: string;
-
     @Prop({ type: String, required: [true, 'Git branch is required'] })
     git_branch: string;
 
+    @Prop({ enum: WorkflowStatus, default: WorkflowStatus.IDLE, })
+    workflow_status?: WorkflowStatus;
+    @Prop({ type: [String], enum: WorkflowStep, default: [], })
+    completed_steps?: WorkflowStep[];
+
     @Prop({ type: String, lowercase: true, unique: true, index: true })
     uuid: string;
-
     @Prop({ type: Number, default: 0 })
     scan_version: number;
 
-    @Prop({ type: Boolean, default: false, index: true })
-    is_deleted: boolean;
     @Prop({ type: String, default: ProjectStatusEnum.Inactive, enum: ProjectStatusEnum })
     status: string;
+    @Prop({ type: Boolean, default: false, index: true })
+    is_deleted: boolean;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
