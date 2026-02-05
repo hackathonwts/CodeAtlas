@@ -14,7 +14,7 @@ async function bootstrap() {
     const logger = app.get(Logger);
 
     app.enableCors({
-        origin: configService.get<string[]>('CORS_ORIGIN') || '*',
+        origin: configService.getOrThrow<string>('CORS_ORIGIN')?.split(','),
         credentials: true,
     });
     app.use(cookieParser());
