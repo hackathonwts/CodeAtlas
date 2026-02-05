@@ -14,7 +14,7 @@ async function bootstrap() {
     const logger = app.get(Logger);
 
     app.enableCors({
-        origin: configService.get<string>('CORS_ORIGIN') || '*',
+        origin: configService.get<string[]>('CORS_ORIGIN') || '*',
         credentials: true,
     });
     app.use(cookieParser());
@@ -25,7 +25,7 @@ async function bootstrap() {
     app.useGlobalFilters(new ApiExceptionFilter());
 
     app.use((req: Request, res: Response, next: NextFunction) => {
-        logger.verbose(`[${req.method}] ${req.originalUrl}`);
+        logger.verbose(`[${req.method}] ${req.originalUrl} -- from ${req.ip}`);
         next();
     });
 
