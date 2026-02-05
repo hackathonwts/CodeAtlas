@@ -17,7 +17,7 @@ import { setCurrentChat } from '@/app/store/chatSlice';
 interface ChatConversationProps {
     selectedChat: IChat;
     conversations: IConversation[];
-    onSendMessage: (message: string, onStreamUpdate?: (content: string) => void) => void;
+    onSendMessage: (message: string, onStreamUpdate?: (content: string) => void) => Promise<void>;
 }
 
 export function ChatConversation({ selectedChat, conversations, onSendMessage }: ChatConversationProps) {
@@ -40,7 +40,7 @@ export function ChatConversation({ selectedChat, conversations, onSendMessage }:
         const currentMessage = message;
         setMessage('');
 
-        onSendMessage(currentMessage, (content) => {
+        await onSendMessage(currentMessage, (content) => {
             setStreamingContent(content);
         });
 

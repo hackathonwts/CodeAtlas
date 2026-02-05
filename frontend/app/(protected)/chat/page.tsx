@@ -84,7 +84,7 @@ export default function ChatPage() {
         fetchConversations(newChat._id);
     };
 
-    const handleSendMessage = async (message: string, onStreamUpdate?: (content: string) => void) => {
+    const handleSendMessage = async (message: string, onStreamUpdate?: (content: string) => void): Promise<void> => {
         if (!selectedChat || !message.trim()) return;
 
         const userMessage = {
