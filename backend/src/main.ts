@@ -25,7 +25,6 @@ async function bootstrap() {
     app.useGlobalFilters(new ApiExceptionFilter());
 
     app.use((req: Request, res: Response, next: NextFunction) => {
-        logger.verbose(req.headers);
         logger.verbose(`[${req.method}] ${req.originalUrl}`);
         next();
     });
