@@ -67,6 +67,15 @@ export class ChatController {
             ignorePath: true,
             changeOrigin: true,
             cookieDomainRewrite: false,
+            on: {
+                proxyReq: (proxyReq, req: any) => {
+                    if (!req.body || !Object.keys(req.body).length) return;
+                    const bodyData = JSON.stringify(req.body);
+                    proxyReq.setHeader('Content-Type', 'application/json');
+                    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+                    proxyReq.write(bodyData);
+                },
+            },
         });
         return llmProxy(req, res);
     }
