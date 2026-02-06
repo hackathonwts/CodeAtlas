@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards, All } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ConverseDto, CreateChatDto, UpdateChatDto } from './dto/chat.dto';
 import type { Response, Request } from 'express';
@@ -6,11 +6,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
 import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { ConfigService } from '@nestjs/config';
+
 
 @Controller('chat')
 @UseGuards(AuthGuard('jwt'), AbacGuard)
 export class ChatController {
-    constructor(private readonly chatService: ChatService) {}
+    constructor(
+        private readonly chatService: ChatService,
+        private readonly configService: ConfigService
+    ) { }
 
     @Post()
     @RequireAbacPolicy({ resource: 'chat', action: 'create' })
@@ -52,5 +58,16 @@ export class ChatController {
     @RequireAbacPolicy({ resource: 'conversation', action: 'create' })
     createConversation(@Param('id') id: string, @Body() body: ConverseDto, @Res() res: Response, @LoggedInUser() user: LoggedInUser) {
         return this.chatService.createConversation(res, id, body, user);
+    }
+
+    @All('llm-conversation')
+    proxyToLLM(@Req() req: Request, @Res() res: Response) {
+        const llmProxy = createProxyMiddleware({
+            target: this.configService.get<string>('LLM_API_URL') + '/api/conversation',
+            ignorePath: true,
+            changeOrigin: true,
+            cookieDomainRewrite: false,
+        });
+        return llmProxy(req, res);
     }
 }

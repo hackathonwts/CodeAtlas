@@ -20,7 +20,21 @@ export class ProjectService {
         @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
         @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
-    ) { }
+    ) {
+        // this.kafkaClient.producer.send({
+        //     topic: KAFKA_TOPICS.PARSER_CREATE.topic,
+        //     messages: [
+        //         {
+        //             key: "6985a939ca03817fff102af5",
+        //             value: JSON.stringify({
+        //                 _id: '6985a939ca03817fff102af5',
+        //                 name: "iiiijjjjkkkk",
+        //                 description: "",
+        //             }),
+        //         },
+        //     ],
+        // });
+    }
 
     async create(createProjectDto: CreateProjectDto, user: LoggedInUser) {
         const createdProject = await new this.projectModel({

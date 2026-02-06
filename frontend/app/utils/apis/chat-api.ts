@@ -2,7 +2,7 @@ import { post, get, del, patch } from '../axios/axios.helpers';
 import { PaginatedResponse, PaginationParams } from '@/interfaces/pagination.interface';
 import { IChat, IConversation } from '@/interfaces/chat.interface';
 
-interface IChatListPayload extends PaginationParams {}
+interface IChatListPayload extends PaginationParams { }
 interface ICreateChatPayload {
     title?: string;
     project_id: string;
@@ -30,17 +30,19 @@ export const createConversationApi = async (data: ICreateConversationPayload) =>
     post<IConversation>('/chat/conversation', data);
 
 // Streaming Conversation API
-export const streamConversationApi = async (chat_id: string, prompt: string) => {
+export const streamConversationApi = async ({ chat_id, project_id, query }: { chat_id: string; project_id: string; query: string }) => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
-    const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION || 'v1';
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
-    return fetch(`${API_URL}/api/${API_VERSION}/chat/${chat_id}/conversation`, {
+    const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION;
+    return fetch(`${API_URL}/api/${API_VERSION}/chat/llm-conversation`, {
         method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+            query: query,
+            pid: project_id,
+            cid: chat_id,
+        })
     });
 };

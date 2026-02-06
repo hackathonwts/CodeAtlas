@@ -105,12 +105,13 @@ export default function ChatPage() {
         dispatch(addConversation(userMessage));
 
         try {
-            const response = await streamConversationApi(selectedChat._id, message);
+            const response = await streamConversationApi({ query: message, chat_id: selectedChat._id, project_id: selectedChat?.project_id?._id });
             if (!response.ok) throw new Error(response.statusText || 'Server error! Failed to send message.');
 
             const reader = response.body?.getReader();
             const decoder = new TextDecoder();
             let fullContent = '';
+            let hasError = false;
 
             if (reader) {
                 while (true) {
@@ -118,32 +119,54 @@ export default function ChatPage() {
                     if (done) break;
 
                     const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split('\n');
+                    const lines = chunk.split('\n').filter(line => line.trim());
+
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
                             const data = line.slice(6);
                             if (data === '[DONE]') break;
-                            fullContent += data;
-                            if (onStreamUpdate) {
-                                onStreamUpdate(fullContent);
+
+                            try {
+                                const jsonData = JSON.parse(data);
+                                if (jsonData.delta?.content) {
+                                    fullContent += jsonData.delta.content;
+                                    if (onStreamUpdate) {
+                                        onStreamUpdate(fullContent);
+                                    }
+                                }
+                                if (jsonData.finish_reason === 'error') {
+                                    hasError = true;
+                                    throw new Error(jsonData.delta?.content || 'An error occurred');
+                                }
+                                if (jsonData.finish_reason === 'stop') {
+                                    break;
+                                }
+                            } catch (parseError) {
+                                if (parseError instanceof SyntaxError) {
+                                    console.warn('Failed to parse chunk:', data);
+                                } else {
+                                    throw parseError;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            dispatch(
-                addConversation({
-                    _id: 'temp-assistant-' + Date.now(),
-                    chat_id: selectedChat._id,
-                    user_id: { _id: 'assistant', full_name: 'CodeAtlas', email: '' },
-                    content: fullContent,
-                    type: 'text' as const,
-                    role: 'assistant' as const,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                }),
-            );
+            if (!hasError && fullContent) {
+                dispatch(
+                    addConversation({
+                        _id: 'temp-assistant-' + Date.now(),
+                        chat_id: selectedChat._id,
+                        user_id: { _id: 'assistant', full_name: 'CodeAtlas', email: '' },
+                        content: fullContent,
+                        type: 'text' as const,
+                        role: 'assistant' as const,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    }),
+                );
+            }
         } catch (error) {
             showErrorToast(error);
         }

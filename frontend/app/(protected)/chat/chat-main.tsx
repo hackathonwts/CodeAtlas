@@ -9,10 +9,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Send, User, Bot, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ReactMarkdown from 'react-markdown';
 import moment from 'moment';
 import { useAppDispatch } from '@/app/store/hooks';
 import { setCurrentChat } from '@/app/store/chatSlice';
+import { Markdown } from '@/components/markdown/markdown-ui';
 
 interface ChatConversationProps {
     selectedChat: IChat;
@@ -139,55 +139,7 @@ export function ChatConversation({ selectedChat, conversations, onSendMessage }:
                                         >
                                             {conversation.role === 'assistant' ? (
                                                 <div className="prose prose-sm max-w-none dark:prose-invert wrap-break-word overflow-hidden">
-                                                    <ReactMarkdown
-                                                        components={{
-                                                            code({ node, className, children, ...props }) {
-                                                                return (
-                                                                    <pre className="bg-background/50 rounded p-2 text-sm whitespace-pre-wrap wrap-break-word overflow-hidden">
-                                                                        <code className={className} {...props}>
-                                                                            {children}
-                                                                        </code>
-                                                                    </pre>
-                                                                );
-                                                            },
-                                                            p({ children }) {
-                                                                return <p className="mb-2 last:mb-0">{children}</p>;
-                                                            },
-                                                            h3({ children }) {
-                                                                return (
-                                                                    <h3 className="text-sm font-semibold mt-3 mb-2 first:mt-0">
-                                                                        {children}
-                                                                    </h3>
-                                                                );
-                                                            },
-                                                            ul({ children }) {
-                                                                return (
-                                                                    <ul className="list-disc list-inside mb-2 space-y-1">
-                                                                        {children}
-                                                                    </ul>
-                                                                );
-                                                            },
-                                                            ol({ children }) {
-                                                                return (
-                                                                    <ol className="list-decimal list-inside mb-2 space-y-1">
-                                                                        {children}
-                                                                    </ol>
-                                                                );
-                                                            },
-                                                            li({ children }) {
-                                                                return <li className="text-sm">{children}</li>;
-                                                            },
-                                                            blockquote({ children }) {
-                                                                return (
-                                                                    <blockquote className="border-l-2 border-muted-foreground/25 pl-3 italic text-muted-foreground mb-2">
-                                                                        {children}
-                                                                    </blockquote>
-                                                                );
-                                                            },
-                                                        }}
-                                                    >
-                                                        {conversation.content}
-                                                    </ReactMarkdown>
+                                                    <Markdown content={conversation.content} />
                                                 </div>
                                             ) : (
                                                 <p className="text-sm whitespace-pre-wrap wrap-break-word">
@@ -213,55 +165,7 @@ export function ChatConversation({ selectedChat, conversations, onSendMessage }:
                                     <div className="flex flex-col items-start">
                                         <div className="bg-muted rounded-lg px-4 py-2 max-w-full min-w-0 overflow-hidden wrap-break-word">
                                             <div className="prose prose-sm max-w-none dark:prose-invert wrap-break-word overflow-hidden">
-                                                <ReactMarkdown
-                                                    components={{
-                                                        code({ node, className, children, ...props }) {
-                                                            return (
-                                                                <pre className="bg-background/50 rounded p-2 text-sm whitespace-pre-wrap wrap-break-word overflow-hidden">
-                                                                    <code className={className} {...props}>
-                                                                        {children}
-                                                                    </code>
-                                                                </pre>
-                                                            );
-                                                        },
-                                                        p({ children }) {
-                                                            return <p className="mb-2 last:mb-0">{children}</p>;
-                                                        },
-                                                        h3({ children }) {
-                                                            return (
-                                                                <h3 className="text-sm font-semibold mt-3 mb-2 first:mt-0">
-                                                                    {children}
-                                                                </h3>
-                                                            );
-                                                        },
-                                                        ul({ children }) {
-                                                            return (
-                                                                <ul className="list-disc list-inside mb-2 space-y-1">
-                                                                    {children}
-                                                                </ul>
-                                                            );
-                                                        },
-                                                        ol({ children }) {
-                                                            return (
-                                                                <ol className="list-decimal list-inside mb-2 space-y-1">
-                                                                    {children}
-                                                                </ol>
-                                                            );
-                                                        },
-                                                        li({ children }) {
-                                                            return <li className="text-sm">{children}</li>;
-                                                        },
-                                                        blockquote({ children }) {
-                                                            return (
-                                                                <blockquote className="border-l-2 border-muted-foreground/25 pl-3 italic text-muted-foreground mb-2">
-                                                                    {children}
-                                                                </blockquote>
-                                                            );
-                                                        },
-                                                    }}
-                                                >
-                                                    {streamingContent}
-                                                </ReactMarkdown>
+                                                <Markdown content={streamingContent} />
                                             </div>
                                         </div>
                                         <span className="text-xs text-muted-foreground mt-1 px-1 flex items-center gap-1">
