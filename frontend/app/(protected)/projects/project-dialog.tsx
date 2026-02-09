@@ -35,23 +35,23 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
     } = useForm<CreateProjectPayload>({
         defaultValues: project
             ? {
-                  title: project.title,
-                  description: project.description || '',
-                  language: project.language || '',
-                  git_link: project.git_link || '',
-                  git_username: project.git_username || '',
-                  git_password: project.git_password || '',
-                  git_branch: project.git_branch || '',
-              }
+                title: project.title,
+                description: project.description || '',
+                language: project.language || '',
+                git_link: project.git_link || '',
+                git_username: project.git_username || '',
+                git_password: project.git_password || '',
+                git_branch: project.git_branch || '',
+            }
             : {
-                  title: '',
-                  description: '',
-                  language: '',
-                  git_link: '',
-                  git_username: '',
-                  git_password: '',
-                  git_branch: '',
-              },
+                title: '',
+                description: '',
+                language: '',
+                git_link: '',
+                git_username: '',
+                git_password: '',
+                git_branch: '',
+            },
     });
 
     React.useEffect(() => {
@@ -61,6 +61,9 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
                 description: project.description || '',
                 language: project.language || '',
                 git_link: project.git_link || '',
+                git_username: project.git_username || '',
+                git_password: project.git_password || '',
+                git_branch: project.git_branch || '',
             });
         } else {
             reset({
@@ -79,7 +82,7 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-131.25">
+            <DialogContent className="sm:max-w-131.25" onInteractOutside={(e) => { e.preventDefault(); }}>
                 <DialogHeader>
                     <DialogTitle>{project ? 'Edit Project' : 'Create Project'}</DialogTitle>
                     <DialogDescription>

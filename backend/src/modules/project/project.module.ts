@@ -10,6 +10,9 @@ import { NotificationSchema, Notification } from 'src/modules/notification/schem
 import { NotificationService } from 'src/modules/notification/notification.service';
 import { NotificationTemplate, NotificationTemplateSchema } from 'src/modules/notification/schemas/notification-template.schema';
 import { Chat, ChatSchema } from '../chat/schemas/chat.schema';
+import { Conversation, ConversationSchema } from '../chat/schemas/conversation.schema';
+import { ProjectDescription, ProjectDescriptionSchema } from './schemas/description.schema';
+import { ProjectMarkdown, ProjectMarkdownSchema } from './schemas/markdown.schema';
 
 @Module({
     imports: [
@@ -21,6 +24,9 @@ import { Chat, ChatSchema } from '../chat/schemas/chat.schema';
             { name: Notification.name, schema: NotificationSchema },
             { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
             { name: Chat.name, schema: ChatSchema },
+            { name: Conversation.name, schema: ConversationSchema },
+            { name: ProjectDescription.name, schema: ProjectDescriptionSchema },
+            { name: ProjectMarkdown.name, schema: ProjectMarkdownSchema },
         ]),
     ],
     controllers: [ProjectController],

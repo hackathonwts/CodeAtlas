@@ -44,6 +44,7 @@
     "react-highlight": "^0.15.0",
     "react-hook-form": "^7.71.1",
     "react-markdown": "^10.1.0",
+    "react-query": "^3.39.3",
     "react-redux": "^9.2.0",
     "react-select": "^5.10.2",
     "rehype-highlight": "^7.0.2",

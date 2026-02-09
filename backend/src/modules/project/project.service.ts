@@ -11,6 +11,9 @@ import { KAFKA_CLIENT } from 'src/kafka/kafka.constants';
 import { KAFKA_TOPICS } from 'src/kafka/kafka.topics';
 import type { KafkaClient } from 'src/kafka/kafka.type';
 import { Chat, ChatDocument } from '../chat/schemas/chat.schema';
+import { Conversation, ConversationDocument } from '../chat/schemas/conversation.schema';
+import { ProjectDescription, ProjectDescriptionDocument } from './schemas/description.schema';
+import { ProjectMarkdown, ProjectMarkdownDocument } from './schemas/markdown.schema';
 
 @Injectable()
 export class ProjectService {
@@ -18,6 +21,9 @@ export class ProjectService {
         @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
         @InjectModel(Member.name) private memberModel: Model<MemberDocument>,
         @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
+        @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
+        @InjectModel(ProjectDescription.name) private projectDescriptionModel: Model<ProjectDescriptionDocument>,
+        @InjectModel(ProjectMarkdown.name) private projectMarkdownModel: Model<ProjectMarkdownDocument>,
         @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
     ) {
@@ -25,10 +31,10 @@ export class ProjectService {
         //     topic: KAFKA_TOPICS.PARSER_CREATE.topic,
         //     messages: [
         //         {
-        //             key: "6985a939ca03817fff102af5",
+        //             key: "6985e7c088d1484801f6f34d",
         //             value: JSON.stringify({
-        //                 _id: '6985a939ca03817fff102af5',
-        //                 name: "iiiijjjjkkkk",
+        //                 _id: '6985e7c088d1484801f6f34d',
+        //                 name: "asdasd",
         //                 description: "",
         //             }),
         //         },
@@ -157,13 +163,33 @@ export class ProjectService {
         return this.projectModel.findById(id).populate('created_by', 'full_name email');
     }
 
-    update(id: string, updateProjectDto: UpdateProjectDto) {
-        return this.projectModel.findByIdAndUpdate(id, { ...updateProjectDto, updatedAt: new Date() }, { new: true });
+    async update(id: string, updateProjectDto: UpdateProjectDto) {
+        const update = await this.projectModel.findByIdAndUpdate(id, { ...updateProjectDto, updatedAt: new Date() }, { new: true })
+        if (!update) throw new Error('Project not found');
+
+        this.kafkaClient.producer.send({
+            topic: KAFKA_TOPICS.PARSER_CREATE.topic,
+            messages: [
+                {
+                    key: update._id.toString(),
+                    value: JSON.stringify({
+                        _id: update._id,
+                        name: update.title,
+                        description: update.description,
+                    }),
+                },
+            ],
+        });
+
+        return update;
     }
 
     remove(id: string) {
         this.memberModel.deleteMany({ project_id: id }).exec();
-        this.chatModel.deleteMany({ project_id: id }).exec();
+        this.chatModel.distinct('_id', { project_id: id }).exec().then((chats) => {
+            this.conversationModel.deleteMany({ chat_id: { $in: chats } }).exec();
+            this.chatModel.deleteMany({ project_id: id }).exec();
+        });
         return this.projectModel.findOneAndDelete({ _id: id });
     }
 }

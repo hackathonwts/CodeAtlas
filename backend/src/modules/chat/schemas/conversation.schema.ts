@@ -23,6 +23,9 @@ export class IConversation {
 
 @Schema({ timestamps: true })
 export class Conversation extends Document {
+    @Prop({ type: MongoSchema.Types.ObjectId, required: [true, 'Project ID is required'] })
+    project_id: Types.ObjectId;
+
     @Prop({ type: MongoSchema.Types.ObjectId, required: [true, 'Chat ID is required'] })
     chat_id: Types.ObjectId;
 

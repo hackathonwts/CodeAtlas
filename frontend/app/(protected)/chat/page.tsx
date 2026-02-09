@@ -5,25 +5,8 @@ import { ChatSidebar } from './chat-sidebar';
 import { ChatConversation } from './chat-main';
 import { IChat } from '@/interfaces/chat.interface';
 import { useAppSelector, useAppDispatch } from '@/app/store/hooks';
-import {
-    setChats,
-    setCurrentChat,
-    setConversations,
-    removeChat,
-    updateChat,
-    addChat,
-    setLoadingChats,
-    setLoadingConversations,
-    addConversation,
-} from '@/app/store/chatSlice';
-import {
-    chatsListApi,
-    conversationsListApi,
-    deleteChatApi,
-    updateChatApi,
-    streamConversationApi,
-} from '@/app/utils/apis/chat-api';
-import { toast } from 'sonner';
+import { setChats, setCurrentChat, setConversations, removeChat, updateChat, addChat, setLoadingChats, setLoadingConversations, addConversation, } from '@/app/store/chatSlice';
+import { chatsListApi, conversationsListApi, deleteChatApi, updateChatApi, streamConversationApi, } from '@/app/utils/apis/chat-api';
 import { showErrorToast } from '@/app/utils/error-handler';
 
 export default function ChatPage() {
