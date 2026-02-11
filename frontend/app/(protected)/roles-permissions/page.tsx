@@ -87,7 +87,7 @@ const createColumns = (onEdit: (role: IRole) => void, onDelete: (role: IRole) =>
                         <>
                             {policies.slice(0, 2).map((policy, idx) => (
                                 <Badge key={idx} variant="default" className="text-xs">
-                                    {policy.subject}:{policy.action}
+                                    {`${policy.subject}:${policy.action}`.toUpperCase()}
                                 </Badge>
                             ))}
                             {policies.length > 2 && (

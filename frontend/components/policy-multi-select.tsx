@@ -1,6 +1,7 @@
 'use client';
 
 import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import { Label } from '@/components/ui/label';
 import { IPolicy } from '@/interfaces/policy.interface';
 
@@ -17,6 +18,8 @@ interface PolicyOption {
     subject: string;
     policy: IPolicy;
 }
+
+const animatedComponents = makeAnimated();
 
 const reactSelectStyles = {
     control: (base: any, state: { isFocused: any }) => ({
@@ -38,7 +41,7 @@ const reactSelectStyles = {
 export function PolicyMultiSelect({ policies, availablePolicies, onChange, label = 'Select Policies', }: PolicyMultiSelectProps) {
     const options: PolicyOption[] = availablePolicies.map((policy) => ({
         value: policy._id,
-        label: `${policy.subject} - ${policy.action}`,
+        label: `${policy.subject}:${policy.action}`?.toUpperCase(),
         subject: policy.subject,
         policy,
     }));
@@ -51,7 +54,7 @@ export function PolicyMultiSelect({ policies, availablePolicies, onChange, label
     }, {} as Record<string, PolicyOption[]>);
 
     const formattedOptions = Object.entries(groupedOptions).map(([subject, opts]) => ({ label: subject, options: opts }));
-    
+
     // Match by _id for accurate pre-selection
     const selectedPolicyIds = policies.map((p) => p._id);
     const selectedOptions = options.filter((opt) => selectedPolicyIds.includes(opt.value));
@@ -68,9 +71,11 @@ export function PolicyMultiSelect({ policies, availablePolicies, onChange, label
                 isMulti
                 options={formattedOptions}
                 value={selectedOptions}
-                onChange={handleChange as any}
+                onChange={handleChange}
                 placeholder="Select policies..."
                 styles={reactSelectStyles}
+                closeMenuOnSelect={false}
+                components={animatedComponents}
             />
         </div>
     );

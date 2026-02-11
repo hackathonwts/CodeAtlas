@@ -137,7 +137,7 @@ const createColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUser) =>
                                     variant={policy.type === 'allow' ? 'default' : 'destructive'} 
                                     className="text-xs"
                                 >
-                                    {policy.subject}:{policy.action}
+                                    {`${policy.subject}:${policy.action}`.toUpperCase()}
                                 </Badge>
                             ))}
                             {allPolicies.length > 2 && (
