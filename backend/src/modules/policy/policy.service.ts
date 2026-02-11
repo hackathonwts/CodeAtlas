@@ -1,12 +1,11 @@
-import { Injectable, OnModuleInit, NotFoundException } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { PATH_METADATA } from '@nestjs/common/constants';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, QueryFilter, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Policy, PolicyDocument } from './schemas/policy.schema';
 import { Role, RoleDocument } from '../role/schemas/role.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
-import { CreatePolicyDto, UpdatePolicyDto, AddPoliciesToUserDto } from './dto/policy.dto';
 import { CHECK_ABILITY } from 'src/casl/casl.decorator';
 import { RequiredRule } from 'src/casl/casl.decorator';
 
@@ -27,139 +26,8 @@ export class PolicyService implements OnModuleInit {
         this.scanControllers();
     }
 
-    async create(createPolicyDto: CreatePolicyDto) {
-        const policy = new this.policyModel(createPolicyDto);
-        return policy.save();
-    }
-
     async findAll() {
         return this.policyModel.find().select('-__v -createdAt -updatedAt').exec();
-    }
-
-    async findOne(id: string) {
-        const policy = await this.policyModel.findById(id).exec();
-        if (!policy) {
-            throw new NotFoundException(`Policy with ID ${id} not found`);
-        }
-        return policy;
-    }
-
-    async update(id: string, updatePolicyDto: UpdatePolicyDto) {
-        const policy = await this.policyModel
-            .findByIdAndUpdate(id, updatePolicyDto, { new: true })
-            .exec();
-        if (!policy) {
-            throw new NotFoundException(`Policy with ID ${id} not found`);
-        }
-        return policy;
-    }
-
-    async remove(id: string) {
-        const result = await this.policyModel.findByIdAndDelete(id).exec();
-        if (!result) {
-            throw new NotFoundException(`Policy with ID ${id} not found`);
-        }
-        return { message: 'Policy deleted successfully' };
-    }
-
-    async addPoliciesToUser(userId: string, dto: AddPoliciesToUserDto) {
-        const user = await this.userModel.findById(userId);
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found`);
-        }
-
-        // Create policies if they don't exist
-        const allowPolicyIds: Types.ObjectId[] = [];
-        const denyPolicyIds: Types.ObjectId[] = [];
-
-        if (dto.allow && dto.allow.length > 0) {
-            for (const policyDto of dto.allow) {
-                const policy = await this.policyModel.create(policyDto);
-                allowPolicyIds.push(policy._id as Types.ObjectId);
-            }
-        }
-
-        if (dto.deny && dto.deny.length > 0) {
-            for (const policyDto of dto.deny) {
-                const policy = await this.policyModel.create(policyDto);
-                denyPolicyIds.push(policy._id as Types.ObjectId);
-            }
-        }
-
-        // Update user's policies
-        if (!user.policies) {
-            user.policies = { allow: [], deny: [] };
-        }
-
-        if (allowPolicyIds.length > 0) {
-            user.policies.allow = [...(user.policies.allow || []), ...allowPolicyIds];
-        }
-
-        if (denyPolicyIds.length > 0) {
-            user.policies.deny = [...(user.policies.deny || []), ...denyPolicyIds];
-        }
-
-        await user.save();
-        return this.userModel.findById(userId)
-            .populate('policies.allow')
-            .populate('policies.deny')
-            .exec();
-    }
-
-    async removePoliciesFromUser(userId: string, dto: AddPoliciesToUserDto) {
-        const user = await this.userModel.findById(userId);
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found`);
-        }
-
-        // Remove policies based on matching criteria
-        if (dto.allow && dto.allow.length > 0) {
-            const policesToRemove = await this.policyModel.find({
-                _id: { $in: user.policies?.allow || [] }
-            });
-
-            const idsToRemove = policesToRemove
-                .filter(p => dto.allow?.some(d =>
-                    d.action === p.action && d.subject === p.subject
-                ))
-                .map(p => p._id.toString());
-
-            user.policies.allow = (user.policies?.allow || []).filter(
-                id => !idsToRemove.includes(id.toString())
-            );
-        }
-
-        if (dto.deny && dto.deny.length > 0) {
-            const policesToRemove = await this.policyModel.find({
-                _id: { $in: user.policies?.deny || [] }
-            });
-
-            const idsToRemove = policesToRemove
-                .filter(p => dto.deny?.some(d =>
-                    d.action === p.action && d.subject === p.subject
-                ))
-                .map(p => p._id.toString());
-
-            user.policies.deny = (user.policies?.deny || []).filter(
-                id => !idsToRemove.includes(id.toString())
-            );
-        }
-
-        await user.save();
-        return this.userModel.findById(userId)
-            .populate('policies.allow')
-            .populate('policies.deny')
-            .exec();
-    }
-
-    async resolvePolicies(user: QueryFilter<UserDocument>) {
-        const role = await this.roleModel.findById(user.active_role).populate('policies');
-        const userPolicies = await this.policyModel.find({ _id: { $in: [user._id as string] } });
-
-        return [
-            ...(role?.policies || []),
-            ...userPolicies,
-        ];
     }
 
     getPermissions() {
