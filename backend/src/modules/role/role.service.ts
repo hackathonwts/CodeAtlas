@@ -1,13 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { Role, RoleDocument } from './schemas/role.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AddPoliciesToRoleDto, RemovePoliciesFromRoleDto } from 'src/modules/policy/dto/policy.dto';
+import { Policy, PolicyDocument } from '../policy/schemas/policy.schema';
 
 @Injectable()
 export class RoleService {
-    constructor(@InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>) {}
+    constructor(
+        @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
+        @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
+    ) {}
 
     async create(createRoleDto: CreateRoleDto) {
         const existingRole = await this.roleModel.findOne({ role: createRoleDto.role, is_deleted: false });
@@ -46,32 +50,56 @@ export class RoleService {
         return role;
     }
 
-    // async addPolicies(id: string, addPoliciesToRoleDto: AddPoliciesToRoleDto) {
-    //     const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
-    //     if (!role) throw new BadRequestException('Role not found');
+    async addPolicies(id: string, addPoliciesToRoleDto: AddPoliciesToRoleDto) {
+        const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
+        if (!role) throw new NotFoundException('Role not found');
 
-    //     const existingPolicies = role.policy || [];
-    //     const newPolicies = addPoliciesToRoleDto.policies.filter((newPolicy) => {
-    //         return !existingPolicies.some((existing) => existing.resource === newPolicy.resource && existing.action === newPolicy.action);
-    //     });
+        // Create new policies and get their IDs
+        const policyIds: Types.ObjectId[] = [];
+        for (const policyDto of addPoliciesToRoleDto.policies) {
+            const policy = await this.policyModel.create(policyDto);
+            policyIds.push(policy._id as Types.ObjectId);
+        }
 
-    //     if (newPolicies.length === 0) return role;
-    //     const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $push: { policy: { $each: newPolicies } } }, { new: true }).exec();
+        // Add to role's policies array
+        const updated = await this.roleModel
+            .findOneAndUpdate(
+                { _id: id, is_deleted: false },
+                { $addToSet: { policies: { $each: policyIds } } },
+                { new: true }
+            )
+            .populate('policies')
+            .exec();
 
-    //     return updated;
-    // }
+        return updated;
+    }
 
-    // async removePolicies(id: string, removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
-    //     const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
-    //     if (!role) throw new BadRequestException('Role not found');
+    async removePolicies(id: string, removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
+        const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).populate('policies').exec();
+        if (!role) throw new NotFoundException('Role not found');
 
-    //     const policiesToRemove = removePoliciesFromRoleDto.policies;
-    //     const updatedPolicies = role.policies.filter((policy) => {
-    //         return !policiesToRemove?.some((remove) => remove.resource === policy.resource && remove.action === policy.action);
-    //     });
+        // Find policies to remove based on action and subject
+        const policiesToRemove = (role.policies as any[]).filter((policy: any) => {
+            return removePoliciesFromRoleDto.policies?.some((remove) => 
+                remove.action === policy.action && remove.subject === policy.subject
+            );
+        });
 
-    //     const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $set: { policy: updatedPolicies } }, { new: true }).exec();
+        const policyIdsToRemove = policiesToRemove.map((p: any) => p._id);
 
-    //     return updated;
-    // }
+        // Remove from role's policies array
+        const updated = await this.roleModel
+            .findOneAndUpdate(
+                { _id: id, is_deleted: false },
+                { $pull: { policies: { $in: policyIdsToRemove } } },
+                { new: true }
+            )
+            .populate('policies')
+            .exec();
+
+        // Optionally delete the policies from the database
+        await this.policyModel.deleteMany({ _id: { $in: policyIdsToRemove } });
+
+        return updated;
+    }
 }

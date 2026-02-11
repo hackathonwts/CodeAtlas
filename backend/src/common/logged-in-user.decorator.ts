@@ -9,6 +9,13 @@ export const LoggedInUser = createParamDecorator((_data: unknown, context: Execu
 
 export type LoggedInUser = Partial<IUser> & {
     _id: string;
-    active_role?: { role: string; policy: IPolicy[] };
-    policy?: { allow: IPolicy[]; deny: IPolicy[] };
+    active_role?: { 
+        _id: string;
+        role: string; 
+        policies: IPolicy[];
+    };
+    policies?: { 
+        allow: IPolicy[]; 
+        deny: IPolicy[] 
+    };
 };

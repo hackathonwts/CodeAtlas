@@ -21,7 +21,10 @@ export interface IUser {
     status: string;
     roles?: IRole[];
     active_role?: IRole;
-    policies?: IPolicy[];
+    policies?: {
+        allow: IPolicy[];
+        deny: IPolicy[];
+    };
     is_deleted: boolean;
 
     createdAt?: Date;
@@ -46,8 +49,18 @@ export class User {
     roles: Types.ObjectId[];
     @Prop({ type: MongoSchema.Types.ObjectId, ref: 'Role', default: null })
     active_role: Types.ObjectId;
-    @Prop([{ type: Types.ObjectId, ref: Policy.name }])
-    policies: IPolicy[];
+    
+    @Prop({
+        type: {
+            allow: [{ type: Types.ObjectId, ref: Policy.name }],
+            deny: [{ type: Types.ObjectId, ref: Policy.name }]
+        },
+        default: { allow: [], deny: [] }
+    })
+    policies: {
+        allow: Types.ObjectId[];
+        deny: Types.ObjectId[];
+    };
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;

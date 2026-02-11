@@ -1,29 +1,44 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { CHECK_POLICIES_KEY, PolicyHandler } from "./casl.decorator";
-import { AppAbility, CaslAbilityFactory } from "./casl-ability.factory";
-import { Reflector } from "@nestjs/core";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { CaslAbilityFactory } from './casl-ability.factory';
+import { CHECK_ABILITY, RequiredRule } from './casl.decorator';
+import { IAuthUser } from 'src/modules/auth/user.repository';
 
 @Injectable()
 export class CaslGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
         private caslAbilityFactory: CaslAbilityFactory,
-    ) { }
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const policyHandlers = this.reflector.get<PolicyHandler[]>(CHECK_POLICIES_KEY, context.getHandler()) || [];
-        console.log("policyHandlers: ", policyHandlers);
-
-        const { user } = context.switchToHttp().getRequest();
-        const ability = this.caslAbilityFactory.createForUser(user) as AppAbility;
-        console.log("ability: ", ability);
-        return policyHandlers.every((handler) => this.execPolicyHandler(handler, ability));
-    }
-
-    private execPolicyHandler(handler: PolicyHandler, ability: AppAbility) {
-        if (typeof handler === 'function') {
-            return handler(ability);
+        const rules = this.reflector.get<RequiredRule[]>(CHECK_ABILITY, context.getHandler());
+        
+        // If no rules are defined, allow access
+        if (!rules || rules.length === 0) {
+            return true;
         }
-        return handler.handle(ability);
+
+        const request = context.switchToHttp().getRequest();
+        const user: IAuthUser = request.user;
+
+        if (!user) {
+            throw new ForbiddenException('User not authenticated');
+        }
+
+        const ability = this.caslAbilityFactory.createForUser(user);
+
+        // Check all required rules
+        for (const rule of rules) {
+            const isAllowed = ability.can(rule.action, rule.subject);
+            
+            if (!isAllowed) {
+                throw new ForbiddenException(
+                    `You are not allowed to ${rule.action} ${rule.subject}`
+                );
+            }
+        }
+
+        return true;
     }
 }

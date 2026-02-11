@@ -34,7 +34,7 @@ import { CaslModule } from './casl/casl.module';
         }),
         AuthModule,
         RoleModule,
-        // PolicyModule,
+        PolicyModule,
         UserModule,
         ProjectModule,
         ChatModule,

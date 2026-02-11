@@ -10,11 +10,17 @@ export class Policy implements IPolicy {
     @Prop({ default: '', required: true })
     subject: string;
 
+    @Prop({ type: [String], default: undefined })
+    fields?: string[];
+
     @Prop({ type: MongoSchema.Types.Mixed, default: null })
     conditions?: any;
 
     @Prop({ default: false })
-    inverted: boolean;
+    inverted?: boolean;
+
+    @Prop({ type: String, default: '' })
+    reason?: string;
 }
 
 export const PolicySchema = SchemaFactory.createForClass(Policy);

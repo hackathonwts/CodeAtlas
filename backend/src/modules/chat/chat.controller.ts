@@ -6,10 +6,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ConfigService } from '@nestjs/config';
+import { CaslGuard } from 'src/casl/casl.guard';
+import { CheckAbilities } from 'src/casl/casl.decorator';
+import { Action } from 'src/casl/casl-ability.factory';
 
 
 @Controller('chat')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), CaslGuard)
 export class ChatController {
     constructor(
         private readonly chatService: ChatService,
@@ -17,36 +20,43 @@ export class ChatController {
     ) { }
 
     @Post()
+    @CheckAbilities({ action: Action.Create, subject: 'Chat' })
     create(@Body() createChatDto: CreateChatDto, @LoggedInUser() user: LoggedInUser) {
         return this.chatService.create(createChatDto, user);
     }
 
     @Get()
+    @CheckAbilities({ action: Action.Read, subject: 'Chat' })
     findAll(@Req() req: Request) {
         return this.chatService.findAll(req);
     }
 
     @Get(':id')
+    @CheckAbilities({ action: Action.Read, subject: 'Chat' })
     findOne(@Param('id') id: string) {
         return this.chatService.findOne(id);
     }
 
     @Patch(':id')
+    @CheckAbilities({ action: Action.Update, subject: 'Chat' })
     update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
         return this.chatService.update(id, updateChatDto);
     }
 
     @Delete(':id')
+    @CheckAbilities({ action: Action.Delete, subject: 'Chat' })
     remove(@Param('id') id: string) {
         return this.chatService.remove(id);
     }
 
     @Get(':id/conversation')
+    @CheckAbilities({ action: Action.Read, subject: 'Chat' })
     findConversations(@Param('id') chat_id: string, @Req() req: Request) {
         return this.chatService.findConversations(chat_id, req);
     }
 
     @Post(':id/conversation')
+    @CheckAbilities({ action: Action.Create, subject: 'Chat' })
     createConversation(@Param('id') id: string, @Body() body: ConverseDto, @Res() res: Response, @LoggedInUser() user: LoggedInUser) {
         return this.chatService.createConversation(res, id, body, user);
     }

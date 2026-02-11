@@ -2,6 +2,8 @@
 export interface IPolicy {
     action: string;
     subject: string;
+    fields?: string[];
     conditions?: any;
-    inverted: boolean;
+    inverted?: boolean;
+    reason?: string;
 }

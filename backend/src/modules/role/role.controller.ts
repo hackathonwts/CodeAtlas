@@ -34,13 +34,13 @@ export class RoleController {
         return this.roleService.remove(id);
     }
 
-    // @Post(':id/policies')
-    // addPolicies(@Param('id') id: string, @Body() addPoliciesToRoleDto: AddPoliciesToRoleDto) {
-    //     return this.roleService.addPolicies(id, addPoliciesToRoleDto);
-    // }
+    @Post(':id/policies')
+    addPolicies(@Param('id') id: string, @Body() addPoliciesToRoleDto: AddPoliciesToRoleDto) {
+        return this.roleService.addPolicies(id, addPoliciesToRoleDto);
+    }
 
-    // @Delete(':id/policies')
-    // removePolicies(@Param('id') id: string, @Body() removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
-    //     return this.roleService.removePolicies(id, removePoliciesFromRoleDto);
-    // }
+    @Delete(':id/policies')
+    removePolicies(@Param('id') id: string, @Body() removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
+        return this.roleService.removePolicies(id, removePoliciesFromRoleDto);
+    }
 }

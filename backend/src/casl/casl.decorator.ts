@@ -1,13 +1,35 @@
-import { SetMetadata } from "@nestjs/common";
-import { AppAbility } from '../casl/casl-ability.factory';
+import { SetMetadata } from '@nestjs/common';
+import { Action } from './casl-ability.factory';
 
-interface IPolicyHandler {
-    handle(ability: AppAbility): boolean;
+export interface RequiredRule {
+    action: Action;
+    subject: string;
 }
 
-type PolicyHandlerCallback = (ability: AppAbility) => boolean;
+export const CHECK_ABILITY = 'check_ability';
 
-export type PolicyHandler = IPolicyHandler | PolicyHandlerCallback;
+export const CheckAbilities = (...requirements: RequiredRule[]) => 
+    SetMetadata(CHECK_ABILITY, requirements);
 
-export const CHECK_POLICIES_KEY = Symbol('check_policy');
-export const CheckPolicies = (...handlers: PolicyHandler[]) => SetMetadata(CHECK_POLICIES_KEY, handlers);
+// Helper function for common permission patterns
+export class AbilityDecorators {
+    static ReadAll(subject: string) {
+        return CheckAbilities({ action: Action.Read, subject });
+    }
+
+    static CreateAll(subject: string) {
+        return CheckAbilities({ action: Action.Create, subject });
+    }
+
+    static UpdateAll(subject: string) {
+        return CheckAbilities({ action: Action.Update, subject });
+    }
+
+    static DeleteAll(subject: string) {
+        return CheckAbilities({ action: Action.Delete, subject });
+    }
+
+    static ManageAll(subject: string) {
+        return CheckAbilities({ action: Action.Manage, subject });
+    }
+}
