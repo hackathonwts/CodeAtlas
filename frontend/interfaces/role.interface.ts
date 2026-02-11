@@ -5,7 +5,7 @@ export interface IRole {
     role: string
     role_display_name: string
     desc: string
-    policy?: IPolicy[]
+    policies?: IPolicy[]
     createdAt?: string
     updatedAt?: string
 }

@@ -1,4 +1,5 @@
 import { IRole } from '@/interfaces/role.interface';
+import { IPolicy } from '@/interfaces/policy.interface';
 import { get, post, put, patch, del } from '../axios/axios.helpers';
 
 export interface GetRolesResponse {
@@ -10,16 +11,14 @@ export interface CreateRolePayload {
     role: string;
     role_display_name: string;
     desc?: string;
-    permissions?: string[];
-    blocked_features?: string[];
+    policies?: string[];
 }
 
 export interface UpdateRolePayload {
     role?: string;
     role_display_name?: string;
     desc?: string;
-    permissions?: string[];
-    blocked_features?: string[];
+    policies?: string[];
 }
 
 export const getAllRolesApi = async (): Promise<IRole[]> => {

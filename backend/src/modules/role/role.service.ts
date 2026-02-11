@@ -11,7 +11,7 @@ export class RoleService {
     constructor(
         @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
         @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
-    ) {}
+    ) { }
 
     async create(createRoleDto: CreateRoleDto) {
         const existingRole = await this.roleModel.findOne({ role: createRoleDto.role, is_deleted: false });
@@ -23,7 +23,13 @@ export class RoleService {
     }
 
     async findAll() {
-        return this.roleModel.find({ is_deleted: false, role: { $ne: 'admin' } }).exec();
+        return this.roleModel
+            .find({ is_deleted: false, role: { $ne: 'admin' } })
+            .populate({
+                path: 'policies',
+                select: 'action subject fields conditions inverted reason'
+            })
+            .exec();
     }
 
     async findOne(id: string) {
@@ -80,7 +86,7 @@ export class RoleService {
 
         // Find policies to remove based on action and subject
         const policiesToRemove = (role.policies as any[]).filter((policy: any) => {
-            return removePoliciesFromRoleDto.policies?.some((remove) => 
+            return removePoliciesFromRoleDto.policies?.some((remove) =>
                 remove.action === policy.action && remove.subject === policy.subject
             );
         });

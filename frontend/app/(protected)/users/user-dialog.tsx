@@ -24,7 +24,7 @@ interface UserFormData {
     email: string;
     password?: string;
     status?: string;
-    policy?: IUser['policy'];
+    policies?: IUser['policies'];
 }
 
 interface UserDialogProps {
@@ -49,22 +49,27 @@ export function UserDialog({ open, onOpenChange, onSubmit, user, isLoading = fal
                   full_name: user.full_name,
                   email: user.email,
                   status: user.status || 'Active',
-                  policy: user.policy || [],
+                  policies: user.policies || { allow: [], deny: [] },
               }
             : {
                   full_name: '',
                   email: '',
                   password: '',
                   status: 'Active',
-                  policy: [],
+                  policies: { allow: [], deny: [] },
               },
     });
 
     const statusValue = watch('status');
-    const selectedPolicies = watch('policy') || [];
+    const selectedPolicies = watch('policies') || { allow: [], deny: [] };
     const policies = useAppSelector((s) => s.policy.policies) as IPolicy[];
-    const handlePoliciesChange = (newPolicies: IPolicy[]) => {
-        setValue('policy', newPolicies);
+    
+    const handleAllowPoliciesChange = (newPolicies: IPolicy[]) => {
+        setValue('policies', { ...selectedPolicies, allow: newPolicies });
+    };
+
+    const handleDenyPoliciesChange = (newPolicies: IPolicy[]) => {
+        setValue('policies', { ...selectedPolicies, deny: newPolicies });
     };
 
     React.useEffect(() => {
@@ -73,7 +78,7 @@ export function UserDialog({ open, onOpenChange, onSubmit, user, isLoading = fal
                 full_name: user.full_name,
                 email: user.email,
                 status: user.status || 'Active',
-                policy: user.policy || [],
+                policies: user.policies || { allow: [], deny: [] },
             });
         } else {
             reset({
@@ -81,7 +86,7 @@ export function UserDialog({ open, onOpenChange, onSubmit, user, isLoading = fal
                 email: '',
                 password: '',
                 status: 'Active',
-                policy: [],
+                policies: { allow: [], deny: [] },
             });
         }
     }, [user, reset]);
@@ -160,11 +165,26 @@ export function UserDialog({ open, onOpenChange, onSubmit, user, isLoading = fal
                         {/* Policies Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold">Access Policies</h3>
-                            <PolicyMultiSelect
-                                policies={selectedPolicies}
-                                availablePolicies={policies}
-                                onChange={handlePoliciesChange}
-                            />
+                            <div className="space-y-3">
+                                <div>
+                                    <Label className="text-xs text-muted-foreground mb-1">Allow Policies</Label>
+                                    <PolicyMultiSelect
+                                        policies={selectedPolicies.allow}
+                                        availablePolicies={policies}
+                                        onChange={handleAllowPoliciesChange}
+                                        label=""
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-xs text-muted-foreground mb-1">Deny Policies</Label>
+                                    <PolicyMultiSelect
+                                        policies={selectedPolicies.deny}
+                                        availablePolicies={policies}
+                                        onChange={handleDenyPoliciesChange}
+                                        label=""
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Status Section */}

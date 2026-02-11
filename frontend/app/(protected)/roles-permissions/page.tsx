@@ -30,7 +30,7 @@ interface RoleFormData {
     role: string;
     role_display_name: string;
     desc?: string;
-    policy?: IPolicy[];
+    policies?: IPolicy[];
 }
 
 const createColumns = (onEdit: (role: IRole) => void, onDelete: (role: IRole) => void): ColumnDef<IRole>[] => [
@@ -77,42 +77,17 @@ const createColumns = (onEdit: (role: IRole) => void, onDelete: (role: IRole) =>
         },
     },
     {
-        accessorKey: 'permissions',
-        header: () => <div className="text-center">Permissions</div>,
-        cell: ({ row }) => {
-            const permissions = row.getValue('permissions') as string[];
-            return (
-                <div className="flex justify-center flex-wrap gap-1">
-                    {permissions && permissions.length > 0 ? (
-                        permissions.slice(0, 3).map((permission, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs">
-                                {permission}
-                            </Badge>
-                        ))
-                    ) : (
-                        <span className="text-muted-foreground">-</span>
-                    )}
-                    {permissions && permissions.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                            +{permissions.length - 3}
-                        </Badge>
-                    )}
-                </div>
-            );
-        },
-    },
-    {
-        accessorKey: 'policy',
+        accessorKey: 'policies',
         header: () => <div className="text-center">Policies</div>,
         cell: ({ row }) => {
-            const policies = row.getValue('policy') as IRole['policy'];
+            const policies = row.getValue('policies') as IRole['policies'];
             return (
                 <div className="flex justify-center flex-wrap gap-1">
                     {policies && policies.length > 0 ? (
                         <>
                             {policies.slice(0, 2).map((policy, idx) => (
                                 <Badge key={idx} variant="default" className="text-xs">
-                                    {policy.resource}:{policy.action}
+                                    {policy.subject}:{policy.action}
                                 </Badge>
                             ))}
                             {policies.length > 2 && (
@@ -235,7 +210,7 @@ export default function RolePermissions() {
                 role: data.role,
                 role_display_name: data.role_display_name,
                 desc: data.desc,
-                policy: data.policy || [],
+                policies: data.policies?.map(p => p._id) || [],
             };
             await createRoleApi(payload);
             setIsCreateDialogOpen(false);
@@ -255,7 +230,7 @@ export default function RolePermissions() {
             const payload = {
                 role_display_name: data.role_display_name,
                 desc: data.desc,
-                policy: data.policy || [],
+                policies: data.policies?.map(p => p._id) || [],
             };
             await updateRoleApi(selectedRole._id!, payload);
             setIsEditDialogOpen(false);

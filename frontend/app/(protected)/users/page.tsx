@@ -14,6 +14,7 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal, Pencil, Trash, PlusIcon } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { IUser } from '@/interfaces/user.interface';
+import { IPolicy } from '@/interfaces/policy.interface';
 import { Badge } from '@/components/ui/badge';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
@@ -22,8 +23,6 @@ import {
     createUserApi,
     updateUserApi,
     deleteUserApi,
-    CreateUserPayload,
-    UpdateUserPayload,
 } from '@/app/utils/apis/user-api';
 import { UserDialog } from './user-dialog';
 import { DeleteDialog } from '../projects/delete-dialog';
@@ -32,6 +31,17 @@ import { showErrorToast } from '@/app/utils/error-handler';
 import { getAllPoliciesApi } from '@/app/utils/apis/policy-api';
 import { setPolicies } from '@/app/store/policySlice';
 import { useAppDispatch } from '@/app/store/hooks';
+
+interface UserFormData {
+    full_name: string;
+    email: string;
+    password?: string;
+    status?: string;
+    policies?: {
+        allow: IPolicy[];
+        deny: IPolicy[];
+    };
+}
 
 const createColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUser) => void): ColumnDef<IUser>[] => [
     {
@@ -109,22 +119,30 @@ const createColumns = (onEdit: (user: IUser) => void, onDelete: (user: IUser) =>
         },
     },
     {
-        accessorKey: 'policy',
+        accessorKey: 'policies',
         header: () => <div className="text-center">Policies</div>,
         cell: ({ row }) => {
-            const policies = row.getValue('policy') as IUser['policy'];
+            const policies = row.getValue('policies') as IUser['policies'];
+            const allPolicies = [
+                ...(policies?.allow || []).map(p => ({ ...p, type: 'allow' })),
+                ...(policies?.deny || []).map(p => ({ ...p, type: 'deny' }))
+            ];
             return (
                 <div className="flex justify-center flex-wrap gap-1">
-                    {policies && policies.length > 0 ? (
+                    {allPolicies && allPolicies.length > 0 ? (
                         <>
-                            {policies.slice(0, 2).map((policy, idx) => (
-                                <Badge key={idx} variant="default" className="text-xs">
-                                    {policy.resource}:{policy.action}
+                            {allPolicies.slice(0, 2).map((policy, idx) => (
+                                <Badge 
+                                    key={idx} 
+                                    variant={policy.type === 'allow' ? 'default' : 'destructive'} 
+                                    className="text-xs"
+                                >
+                                    {policy.subject}:{policy.action}
                                 </Badge>
                             ))}
-                            {policies.length > 2 && (
+                            {allPolicies.length > 2 && (
                                 <Badge variant="outline" className="text-xs">
-                                    +{policies.length - 2}
+                                    +{allPolicies.length - 2}
                                 </Badge>
                             )}
                         </>
@@ -251,10 +269,18 @@ export default function UsersList() {
         fetchPolicies();
     }, [isEditDialogOpen, isCreateDialogOpen]);
 
-    const handleCreate = async (data: CreateUserPayload | UpdateUserPayload) => {
+    const handleCreate = async (data: UserFormData) => {
         try {
             setIsSubmitting(true);
-            await createUserApi(data as CreateUserPayload);
+            await createUserApi({
+                full_name: data.full_name,
+                email: data.email,
+                password: data.password!,
+                policies: data.policies ? {
+                    allow: data.policies.allow.map((p) => p._id),
+                    deny: data.policies.deny.map((p) => p._id),
+                } : undefined,
+            });
             setIsCreateDialogOpen(false);
             toast.success('User created successfully');
             fetchUsers();
@@ -265,11 +291,18 @@ export default function UsersList() {
         }
     };
 
-    const handleUpdate = async (data: CreateUserPayload | UpdateUserPayload) => {
+    const handleUpdate = async (data: UserFormData) => {
         if (!selectedUser) return;
         try {
             setIsSubmitting(true);
-            await updateUserApi(selectedUser._id, data as UpdateUserPayload);
+            await updateUserApi(selectedUser._id, {
+                full_name: data.full_name,
+                status: data.status,
+                policies: data.policies ? {
+                    allow: data.policies.allow.map((p) => p._id),
+                    deny: data.policies.deny.map((p) => p._id),
+                } : undefined,
+            });
             setIsEditDialogOpen(false);
             setSelectedUser(null);
             toast.success('User updated successfully');

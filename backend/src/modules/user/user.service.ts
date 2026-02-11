@@ -14,7 +14,7 @@ export class UserService {
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
         @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
         private readonly notificationService: NotificationService,
-    ) {}
+    ) { }
 
     async getMe(user: Partial<IUser>) {
         const user_data = await this.userModel
@@ -55,12 +55,12 @@ export class UserService {
             .populate({
                 path: 'active_role',
                 match: { is_deleted: false },
-                select: 'role role_display_name policy desc',
+                select: 'role role_display_name policies desc',
             })
             .populate({
                 path: 'roles',
                 match: { is_deleted: false },
-                select: 'role role_display_name policy desc',
+                select: 'role role_display_name policies desc',
             });
 
         return { message: 'Personal info updated successfully', data: updated_user };
@@ -174,7 +174,11 @@ export class UserService {
                 path: 'roles',
                 match: { is_deleted: false },
                 select: 'role role_display_name desc',
-            });
+            })
+            .populate([
+                { path: 'policies.allow', select: 'action subject fields conditions inverted reason' },
+                { path: 'policies.deny', select: 'action subject fields conditions inverted reason' }
+            ])
 
         const [users, total_docs] = await Promise.all([users_query.exec(), total_docs_query]);
 

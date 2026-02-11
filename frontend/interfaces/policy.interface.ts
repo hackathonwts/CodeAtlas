@@ -2,9 +2,12 @@ export type OwnershipCondition = 'own' | 'any'
 
 export interface IPolicy {
     _id: string
-    resource: string
     action: string
-    conditions?: IPolicyConditions
+    subject: string
+    fields?: string[]
+    conditions?: any
+    inverted?: boolean
+    reason?: string
 }
 
 export interface IPolicyConditions {

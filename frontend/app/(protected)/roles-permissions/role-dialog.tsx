@@ -23,7 +23,7 @@ interface RoleFormData {
     role: string;
     role_display_name: string;
     desc?: string;
-    policy?: IRole['policy'];
+    policies?: IRole['policies'];
 }
 
 interface RoleDialogProps {
@@ -45,17 +45,17 @@ export function RoleDialog({ open, onOpenChange, onSubmit, role, isLoading = fal
     } = useForm<RoleFormData>({
         defaultValues: role
             ? {
-                  role: role.role,
-                  role_display_name: role.role_display_name,
-                  desc: role.desc || '',
-                  policy: role.policy || [],
-              }
+                role: role.role,
+                role_display_name: role.role_display_name,
+                desc: role.desc || '',
+                policies: role.policies || [],
+            }
             : {
-                  role: '',
-                  role_display_name: '',
-                  desc: '',
-                  policy: [],
-              },
+                role: '',
+                role_display_name: '',
+                desc: '',
+                policies: [],
+            }
     });
 
     React.useEffect(() => {
@@ -64,14 +64,14 @@ export function RoleDialog({ open, onOpenChange, onSubmit, role, isLoading = fal
                 role: role.role,
                 role_display_name: role.role_display_name,
                 desc: role.desc || '',
-                policy: role.policy || [],
+                policies: role.policies || [],
             });
         } else {
             reset({
                 role: '',
                 role_display_name: '',
                 desc: '',
-                policy: [],
+                policies: [],
             });
         }
     }, [role, reset]);
@@ -80,10 +80,11 @@ export function RoleDialog({ open, onOpenChange, onSubmit, role, isLoading = fal
         await onSubmit(data);
         reset();
     };
-    const selectedPolicies = watch('policy') || [];
+    const selectedPolicies = watch('policies') || [];
+    console.log("selectedPolicies: ", selectedPolicies);
     const policies = useAppSelector((s) => s.policy.policies) as IPolicy[];
     const handlePoliciesChange = (newPolicies: IPolicy[]) => {
-        setValue('policy', newPolicies);
+        setValue('policies', newPolicies);
     };
 
     return (

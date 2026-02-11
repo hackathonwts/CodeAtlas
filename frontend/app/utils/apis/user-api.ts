@@ -25,14 +25,20 @@ export interface CreateUserPayload {
     full_name: string;
     email: string;
     password: string;
-    policy?: IPolicy[];
+    policies?: {
+        allow: string[];
+        deny: string[];
+    };
 }
 
 export interface UpdateUserPayload {
     full_name?: string;
     email?: string;
     status?: string;
-    policy?: IPolicy[];
+    policies?: {
+        allow: string[];
+        deny: string[];
+    };
 }
 
 export const getAllUsersApi = async (filters: GetUsersFilter): Promise<GetUsersResponse> => {

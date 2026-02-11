@@ -31,6 +31,15 @@ export interface IUser {
     updatedAt?: Date;
 }
 
+@Schema({ _id: false })
+class PolicyAccess {
+    @Prop({ type: [Types.ObjectId], ref: Policy.name, default: [] })
+    allow: Types.ObjectId[];
+
+    @Prop({ type: [Types.ObjectId], ref: Policy.name, default: [] })
+    deny: Types.ObjectId[];
+}
+
 @Schema({ timestamps: true, versionKey: false })
 export class User {
     @Prop({ type: String, trim: true, default: '' })
@@ -50,17 +59,8 @@ export class User {
     @Prop({ type: MongoSchema.Types.ObjectId, ref: 'Role', default: null })
     active_role: Types.ObjectId;
 
-    @Prop({
-        type: {
-            allow: [{ type: Types.ObjectId, ref: Policy.name }],
-            deny: [{ type: Types.ObjectId, ref: Policy.name }]
-        },
-        default: { allow: [], deny: [] }
-    })
-    policies: {
-        allow: Types.ObjectId[];
-        deny: Types.ObjectId[];
-    };
+    @Prop({ type: PolicyAccess, default: { allow: [], deny: [] } })
+    policies: { allow: Types.ObjectId[]; deny: Types.ObjectId[]; };
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;

@@ -31,7 +31,7 @@ export class Role {
     @Prop({ type: String, trim: true, default: '' })
     desc: string;
 
-    @Prop([{ type: Types.ObjectId, ref: Policy.name }])
+    @Prop({ type: [Types.ObjectId], ref: Policy.name })
     policies: Types.ObjectId[];
 
     @Prop({ type: Boolean, default: false, index: true })
