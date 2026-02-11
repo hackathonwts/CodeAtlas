@@ -8,9 +8,11 @@ import { JwtModule } from '@nestjs/jwt/dist/jwt.module';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { Role, RoleSchema } from 'src/modules/role/schemas/role.schema';
 import { UserRepository } from './user.repository';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
     imports: [
+        CaslModule,
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
             { name: Role.name, schema: RoleSchema },

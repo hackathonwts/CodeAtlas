@@ -36,12 +36,12 @@ export class AuthService {
         }
 
         let policies = new Set<string>();
-        if (user?.active_role?.role !== UserRoleEnum.Admin) {
-            policies = new Set([
-                ...(user.active_role?.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || []),
-                ...(user.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || [])
-            ]);
-        }
+        // if (user?.active_role?.role !== UserRoleEnum.Admin) {
+        //     policies = new Set([
+        //         ...(user.active_role?.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || []),
+        //         ...(user.policies?.map(p => p.resource)?.filter(p => p.includes('view')) || [])
+        //     ]);
+        // }
 
         const payload: { id: string } = {
             id: user._id.toString(),

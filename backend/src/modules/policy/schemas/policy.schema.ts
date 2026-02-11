@@ -1,29 +1,31 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import type { IPolicy, IPolicyConditions } from '../policy.interface';
+import { HydratedDocument, Schema as MongoSchema } from 'mongoose';
+import type { IPolicy } from '../policy.interface';
 
 @Schema({ timestamps: true, versionKey: false })
 export class Policy implements IPolicy {
-    @Prop({ type: String, required: true })
-    resource: string;
-
-    @Prop({ type: String, required: true })
+    @Prop({ required: true })
     action: string;
 
-    @Prop({ type: Object, default: {} })
-    conditions?: IPolicyConditions;
+    @Prop({ default: '', required: true })
+    subject: string;
+
+    @Prop({ type: MongoSchema.Types.Mixed, default: null })
+    conditions?: any;
+
+    @Prop({ default: false })
+    inverted: boolean;
 }
 
 export const PolicySchema = SchemaFactory.createForClass(Policy);
 export type PolicyDocument = HydratedDocument<Policy>;
 
 PolicySchema.index(
-    { resource: 1, action: 1 },
+    { action: 1, subject: 1 },
     {
-        unique: true,
         partialFilterExpression: {
-            resource: { $exists: true, $ne: '' },
             action: { $exists: true, $ne: '' },
+            subject: { $exists: true, $ne: '' },
         },
     },
 );

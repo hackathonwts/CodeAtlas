@@ -9,6 +9,7 @@ import { RoleModule } from './modules/role/role.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { KafkaModule } from './kafka/kafka.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
     imports: [
@@ -33,11 +34,12 @@ import { KafkaModule } from './kafka/kafka.module';
         }),
         AuthModule,
         RoleModule,
-        PolicyModule,
+        // PolicyModule,
         UserModule,
         ProjectModule,
         ChatModule,
         NotificationModule,
+        CaslModule,
     ],
     controllers: [],
     providers: [ConfigService, Logger],

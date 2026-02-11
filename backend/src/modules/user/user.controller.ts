@@ -2,14 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Http
 import { UserService } from './user.service';
 import { CreateUserDto, emailChangeDto, EmailVerificationDto, UpdatePersonalInfoDto, UpdateUserDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
-import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
 import type { Request, Response } from 'express';
 import { IUser } from './schemas/user.schema';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
 
 @Controller('user')
-@UseGuards(AuthGuard('jwt'), AbacGuard)
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -44,31 +42,26 @@ export class UserController {
     }
 
     @Post()
-    @RequireAbacPolicy({ resource: 'user', action: 'create' })
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
 
     @Get()
-    @RequireAbacPolicy({ resource: 'user', action: 'read' })
     findAll(@Req() req: Request) {
         return this.userService.findAll(req);
     }
 
     @Get(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'read' })
     findOne(@Param('id') id: string) {
         return this.userService.findOne(id);
     }
 
     @Patch(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'update' })
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.update(id, updateUserDto);
     }
 
     @Delete(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'delete' })
     remove(@Param('id') id: string) {
         return this.userService.remove(id);
     }

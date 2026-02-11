@@ -4,7 +4,7 @@ import { Model, QueryFilter } from "mongoose";
 import { IPolicy } from "../policy/policy.interface";
 
 
-export interface IAuthUser extends Omit<UserDocument, 'active_role' | 'roles'> {
+export interface IAuthUser extends Omit<UserDocument, 'active_role' | 'roles' | 'policies'> {
     policies?: IPolicy[] | string;
     active_role?: {
         _id: string;

@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { compareSync, hashSync, genSaltSync, genSalt, hash } from 'bcrypt';
 import { HydratedDocument, Schema as MongoSchema, Types } from 'mongoose';
-import { Policy, PolicySchema } from 'src/modules/policy/schemas/policy.schema';
+import { IPolicy } from 'src/modules/policy/policy.interface';
+import { Policy } from 'src/modules/policy/schemas/policy.schema';
+import type { IRole } from 'src/modules/role/schemas/role.schema';
 
 export enum UserStatus {
     Active = 'Active',
@@ -17,9 +19,9 @@ export interface IUser {
     password: string;
     email_verification_otp: number | null;
     status: string;
-    roles?: Types.ObjectId[];
-    active_role?: Types.ObjectId;
-    policy?: Policy[];
+    roles?: IRole[];
+    active_role?: IRole;
+    policies?: IPolicy[];
     is_deleted: boolean;
 
     createdAt?: Date;
@@ -27,7 +29,7 @@ export interface IUser {
 }
 
 @Schema({ timestamps: true, versionKey: false })
-export class User implements IUser {
+export class User {
     @Prop({ type: String, trim: true, default: '' })
     full_name: string;
     @Prop({ type: String, trim: true, default: '' })
@@ -44,8 +46,8 @@ export class User implements IUser {
     roles: Types.ObjectId[];
     @Prop({ type: MongoSchema.Types.ObjectId, ref: 'Role', default: null })
     active_role: Types.ObjectId;
-    @Prop({ type: [PolicySchema], default: [] })
-    policy: Policy[];
+    @Prop([{ type: Types.ObjectId, ref: Policy.name }])
+    policies: IPolicy[];
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;

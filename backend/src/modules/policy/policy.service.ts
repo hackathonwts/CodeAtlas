@@ -2,8 +2,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { PATH_METADATA, METHOD_METADATA } from '@nestjs/common/constants';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, QueryFilter } from 'mongoose';
 import { Policy, PolicyDocument } from './schemas/policy.schema';
+import { Role, RoleDocument } from '../role/schemas/role.schema';
+import { IUser } from '../user/schemas/user.schema';
 
 @Injectable()
 export class PolicyService implements OnModuleInit {
@@ -14,10 +16,21 @@ export class PolicyService implements OnModuleInit {
         private readonly metadataScanner: MetadataScanner,
         private readonly reflector: Reflector,
         @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
-    ) {}
+        @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
+    ) { }
 
     onModuleInit() {
         this.scanControllers();
+    }
+
+    async resolvePolicies(user: QueryFilter<IUser>) {
+        const role = await this.roleModel.findById(user.active_role).populate('policies');
+        const userPolicies = await this.policyModel.find({ _id: { $in: [user._id as string] } });
+
+        return [
+            ...(role?.policies || []),
+            ...userPolicies,
+        ];
     }
 
     async findAll() {

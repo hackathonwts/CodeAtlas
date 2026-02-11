@@ -46,32 +46,32 @@ export class RoleService {
         return role;
     }
 
-    async addPolicies(id: string, addPoliciesToRoleDto: AddPoliciesToRoleDto) {
-        const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
-        if (!role) throw new BadRequestException('Role not found');
+    // async addPolicies(id: string, addPoliciesToRoleDto: AddPoliciesToRoleDto) {
+    //     const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
+    //     if (!role) throw new BadRequestException('Role not found');
 
-        const existingPolicies = role.policy || [];
-        const newPolicies = addPoliciesToRoleDto.policies.filter((newPolicy) => {
-            return !existingPolicies.some((existing) => existing.resource === newPolicy.resource && existing.action === newPolicy.action);
-        });
+    //     const existingPolicies = role.policy || [];
+    //     const newPolicies = addPoliciesToRoleDto.policies.filter((newPolicy) => {
+    //         return !existingPolicies.some((existing) => existing.resource === newPolicy.resource && existing.action === newPolicy.action);
+    //     });
 
-        if (newPolicies.length === 0) return role;
-        const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $push: { policy: { $each: newPolicies } } }, { new: true }).exec();
+    //     if (newPolicies.length === 0) return role;
+    //     const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $push: { policy: { $each: newPolicies } } }, { new: true }).exec();
 
-        return updated;
-    }
+    //     return updated;
+    // }
 
-    async removePolicies(id: string, removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
-        const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
-        if (!role) throw new BadRequestException('Role not found');
+    // async removePolicies(id: string, removePoliciesFromRoleDto: RemovePoliciesFromRoleDto) {
+    //     const role = await this.roleModel.findOne({ _id: id, is_deleted: false }).exec();
+    //     if (!role) throw new BadRequestException('Role not found');
 
-        const policiesToRemove = removePoliciesFromRoleDto.policies;
-        const updatedPolicies = role.policy.filter((policy) => {
-            return !policiesToRemove?.some((remove) => remove.resource === policy.resource && remove.action === policy.action);
-        });
+    //     const policiesToRemove = removePoliciesFromRoleDto.policies;
+    //     const updatedPolicies = role.policies.filter((policy) => {
+    //         return !policiesToRemove?.some((remove) => remove.resource === policy.resource && remove.action === policy.action);
+    //     });
 
-        const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $set: { policy: updatedPolicies } }, { new: true }).exec();
+    //     const updated = await this.roleModel.findOneAndUpdate({ _id: id, is_deleted: false }, { $set: { policy: updatedPolicies } }, { new: true }).exec();
 
-        return updated;
-    }
+    //     return updated;
+    // }
 }

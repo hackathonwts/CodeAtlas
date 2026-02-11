@@ -1,11 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { IPolicy } from 'src/modules/policy/policy.interface';
 import { Policy } from 'src/modules/policy/schemas/policy.schema';
 
 export enum UserRoleEnum {
     Admin = 'admin',
     User = 'user',
     Manager = 'manager',
+}
+
+export interface IRole {
+    _id?: Types.ObjectId;
+
+    role: UserRoleEnum;
+    role_display_name: string;
+    desc: string;
+    policies: IPolicy[];
+    is_deleted: boolean;
+
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 @Schema({ timestamps: true, versionKey: false })
@@ -17,8 +31,8 @@ export class Role {
     @Prop({ type: String, trim: true, default: '' })
     desc: string;
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: Policy.name, default: [] }] })
-    policy: Policy[];
+    @Prop([{ type: Types.ObjectId, ref: Policy.name }])
+    policies: Types.ObjectId[];
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;
