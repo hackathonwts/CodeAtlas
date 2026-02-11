@@ -35,37 +35,24 @@ const reactSelectStyles = {
     }),
 };
 
-export function PolicyMultiSelect({
-    policies,
-    availablePolicies,
-    onChange,
-    label = 'Select Policies',
-}: PolicyMultiSelectProps) {
+export function PolicyMultiSelect({ policies, availablePolicies, onChange, label = 'Select Policies', }: PolicyMultiSelectProps) {
     const options: PolicyOption[] = availablePolicies.map((policy) => ({
         value: policy._id,
         label: `${policy.resource} - ${policy.action}`,
         resource: policy.resource,
         policy,
+        selected: policies.some((p) => p.action === policy.action && p.resource === policy.resource),
     }));
 
-    const groupedOptions = options.reduce(
-        (groups, option) => {
-            const resource = option.resource;
-            if (!groups[resource]) {
-                groups[resource] = [];
-            }
-            groups[resource].push(option);
-            return groups;
-        },
-        {} as Record<string, PolicyOption[]>,
-    );
+    const groupedOptions = options.reduce((groups, option) => {
+        const resource = option.resource;
+        if (!groups[resource]) groups[resource] = [];
+        groups[resource].push(option);
+        return groups;
+    }, {} as Record<string, PolicyOption[]>);
 
-    const formattedOptions = Object.entries(groupedOptions).map(([resource, opts]) => ({
-        label: resource,
-        options: opts,
-    }));
-
-    const selectedOptions = options.filter((opt) => policies.some((p) => p._id === opt.value));
+    const formattedOptions = Object.entries(groupedOptions).map(([resource, opts]) => ({ label: resource, options: opts }));
+    const selectedOptions = availablePolicies.filter((policy) => policies.some((p) => p.action === policy.action && p.resource === policy.resource)).map((policy) => policy._id);
 
     const handleChange = (selected: readonly PolicyOption[]) => {
         const selectedPolicies = selected.map((opt) => opt.policy);
@@ -78,7 +65,7 @@ export function PolicyMultiSelect({
             <Select
                 isMulti
                 options={formattedOptions}
-                value={selectedOptions}
+                value={[...options.filter((opt) => selectedOptions.includes(opt.value))]}
                 onChange={handleChange as any}
                 placeholder="Select policies..."
                 styles={reactSelectStyles}

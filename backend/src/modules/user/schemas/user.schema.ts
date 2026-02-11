@@ -19,6 +19,7 @@ export interface IUser {
     status: string;
     roles?: Types.ObjectId[];
     active_role?: Types.ObjectId;
+    policy?: Policy[];
     is_deleted: boolean;
 
     createdAt?: Date;

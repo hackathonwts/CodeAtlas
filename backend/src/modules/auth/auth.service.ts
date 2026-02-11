@@ -9,27 +9,38 @@ import { CreateUserDto } from 'src/modules/user/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
 import { Role, RoleDocument, UserRoleEnum } from 'src/modules/role/schemas/role.schema';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
         @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
+        private readonly userRepository: UserRepository,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-    ) {}
+    ) { }
 
     async login(res: Response, body: LoginDto) {
         const { email, password } = body;
-        const user = await this.userModel.findOne({ email, is_deleted: false });
+        const user = await this.userRepository.getAuthUser({ email: email.toLowerCase() });
 
         if (!user) throw new BadRequestException('Invalid credentials or user does not exist');
         if (!user.validPassword(password)) throw new BadRequestException('Invalid credentials or user does not exist');
         if (user.status !== UserStatus.Active) throw new BadRequestException('Your access has been disabled, please contact admin');
         if (!user.roles?.length) throw new BadRequestException('User has no roles assigned');
 
-        if (!user.active_role) {
-            await this.userModel.findOneAndUpdate({ _id: user._id, active_role: { $exists: false } }, { $set: { active_role: user.roles[0] } }, { new: true });
+        if (!user.active_role?._id) {
+            await this.userModel.findOneAndUpdate({ _id: user._id, active_role: { $exists: false } }, { $set: { active_role: user.roles?.[0]?._id } }, { new: true });
+            user.active_role = user.roles?.[0];
+        }
+
+        let policies = new Set<string>();
+        if (user?.active_role?.role !== UserRoleEnum.Admin) {
+            policies = new Set([
+                ...(user.active_role?.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || []),
+                ...(user.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || [])
+            ]);
         }
 
         const payload: { id: string } = {
@@ -43,7 +54,7 @@ export class AuthService {
             sameSite: 'lax',
         });
 
-        return res.send({ message: 'Login successful', data: user });
+        return res.send({ message: 'Login successful', data: user, policies: Array.from(policies) });
     }
 
     async signup(res: Response, body: CreateUserDto) {

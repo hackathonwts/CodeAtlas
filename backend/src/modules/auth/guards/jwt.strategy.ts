@@ -9,11 +9,13 @@ import { Model } from 'mongoose';
 import { User, UserDocument, UserStatus } from 'src/modules/user/schemas/user.schema';
 import { JwtPayloadType } from 'src/common/jwt.type';
 import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
+import { UserRepository } from '../user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+        private readonly userRepository: UserRepository,
         readonly configService: ConfigService,
     ) {
         super({
@@ -25,20 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     async validate(_req: Request, payload: JwtPayloadType, done: VerifiedCallback) {
         const { id, iat } = payload;
-        const user = await this.userModel
-            .findById(id)
-            .where({ is_deleted: false, status: UserStatus.Active })
-            .populate({
-                path: 'active_role',
-                match: { is_deleted: false },
-                select: 'role role_display_name policy desc',
-            })
-            .populate({
-                path: 'roles',
-                match: { is_deleted: false },
-                select: 'role role_display_name policy desc',
-            });
-
+        const user = await this.userRepository.getAuthUser({ _id: id, status: UserStatus.Active });
         if (!user) return done(new UnauthorizedException(), false);
         return done(null, user, iat);
     }
