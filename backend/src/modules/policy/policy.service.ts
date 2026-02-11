@@ -212,8 +212,6 @@ export class PolicyService implements OnModuleInit {
 
             this.metadataScanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), (methodName) => {
                 const methodRef = instance[methodName];
-
-                // Only discover policies from explicit @CheckAbilities decorators
                 const requiredRules = this.reflector.get<RequiredRule[]>(CHECK_ABILITY, methodRef);
 
                 if (requiredRules && requiredRules.length > 0) {

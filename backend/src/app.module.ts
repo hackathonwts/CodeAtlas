@@ -25,18 +25,18 @@ import { CaslModule } from './casl/casl.module';
             }),
             inject: [ConfigService],
         }),
-        // KafkaModule.registerAsync({
-        //     useFactory: (configService: ConfigService) => ({
-        //         clientId: configService.getOrThrow<string>('KAFKA_APP_ID'),
-        //         brokers: [configService.getOrThrow<string>('KAFKA_BROKER_URL')],
-        //     }),
-        //     inject: [ConfigService],
-        // }),
+        KafkaModule.registerAsync({
+            useFactory: (configService: ConfigService) => ({
+                clientId: configService.getOrThrow<string>('KAFKA_APP_ID'),
+                brokers: [configService.getOrThrow<string>('KAFKA_BROKER_URL')],
+            }),
+            inject: [ConfigService],
+        }),
         AuthModule,
         RoleModule,
         PolicyModule,
         UserModule,
-        // ProjectModule,
+        ProjectModule,
         ChatModule,
         NotificationModule,
         CaslModule,

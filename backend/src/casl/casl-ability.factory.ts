@@ -14,6 +14,7 @@ export enum Action {
     Read = 'read',
     Update = 'update',
     Delete = 'delete',
+    View = 'view',
 }
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;

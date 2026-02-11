@@ -5,6 +5,8 @@ import type { Request, Response } from 'express';
 import { IUser } from './schemas/user.schema';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CheckAbilities } from 'src/casl/casl.decorator';
+import { Action } from 'src/casl/casl-ability.factory';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -42,26 +44,31 @@ export class UserController {
     }
 
     @Post()
+    @CheckAbilities({ action: Action.Create, subject: 'User' })
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
 
     @Get()
+    @CheckAbilities({ action: Action.View, subject: 'User' })
     findAll(@Req() req: Request) {
         return this.userService.findAll(req);
     }
 
     @Get(':id')
+    @CheckAbilities({ action: Action.Read, subject: 'User' })
     findOne(@Param('id') id: string) {
         return this.userService.findOne(id);
     }
 
     @Patch(':id')
+    @CheckAbilities({ action: Action.Update, subject: 'User' })
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.update(id, updateUserDto);
     }
 
     @Delete(':id')
+    @CheckAbilities({ action: Action.Delete, subject: 'User' })
     remove(@Param('id') id: string) {
         return this.userService.remove(id);
     }

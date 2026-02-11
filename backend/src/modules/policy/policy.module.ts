@@ -10,7 +10,7 @@ import { PolicyController } from './policy.controller';
 
 @Module({
     imports: [
-        DiscoveryModule, 
+        DiscoveryModule,
         MongooseModule.forFeature([
             { name: Policy.name, schema: PolicySchema },
             { name: Role.name, schema: RoleSchema },
@@ -26,7 +26,7 @@ export class PolicyModule implements OnModuleInit {
         @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
         @InjectConnection() private readonly connection: Connection,
         private readonly policyService: PolicyService,
-    ) {}
+    ) { }
 
     async onModuleInit() {
         const discovered = this.policyService.getPermissions();
@@ -35,7 +35,7 @@ export class PolicyModule implements OnModuleInit {
             map.set(`${p.subject}:${p.action}`, p);
         }
         const unique = [...map.values()];
-        
+
         const existingCount = await this.policyModel.countDocuments();
         if (existingCount > 0) {
             Logger.log('Policies already exist, skipping auto-discovery seed');
@@ -51,7 +51,7 @@ export class PolicyModule implements OnModuleInit {
                     inverted: false,
                     reason: `Auto-discovered from ${p.subject} controller`
                 }));
-                
+
                 await this.policyModel.insertMany(policiesToInsert);
                 Logger.log(`Seeded ${policiesToInsert.length} auto-discovered policies`);
             });

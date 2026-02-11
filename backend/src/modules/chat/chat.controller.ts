@@ -26,7 +26,7 @@ export class ChatController {
     }
 
     @Get()
-    @CheckAbilities({ action: Action.Read, subject: 'Chat' })
+    @CheckAbilities({ action: Action.View, subject: 'Chat' })
     findAll(@Req() req: Request) {
         return this.chatService.findAll(req);
     }
