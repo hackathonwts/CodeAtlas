@@ -11,7 +11,7 @@ import { Action } from 'src/casl/casl-ability.factory';
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) { }
 
     @Get('me')
     @HttpCode(200)

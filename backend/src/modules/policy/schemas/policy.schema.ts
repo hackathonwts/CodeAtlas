@@ -21,6 +21,9 @@ export class Policy implements IPolicy {
 
     @Prop({ type: String, default: '' })
     reason?: string;
+
+    @Prop({ default: true, index: true })
+    is_active?: boolean;
 }
 
 export const PolicySchema = SchemaFactory.createForClass(Policy);

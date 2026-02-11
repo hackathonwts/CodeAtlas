@@ -8,12 +8,16 @@ import { setUser, setLoading } from '../store/authSlice';
 import type { RootState } from '../store/store';
 import { meApi } from '../utils/apis/auth-api';
 import ServerDownPage from '@/components/server-down';
+import { createAbilityForUser, AppAbility } from '@/lib/ability';
+import { AbilityContext } from './AbilityProvider';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
+
     const [isInitialized, setIsInitialized] = useState(false);
     const [serverDown, setServerDown] = useState(false);
+    const [ability, setAbility] = useState<AppAbility | null>(null);
 
     useEffect(() => {
         const initAuth = async () => {
@@ -21,6 +25,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
                 try {
                     dispatch(setLoading(true));
                     const result = await meApi();
+                    const abilities = createAbilityForUser(result.data);
+
+                    setAbility(abilities);
                     dispatch(setUser(result.data));
                 } catch (error: any) {
                     setServerDown(parseInt(error?.status) >= 500);
@@ -45,7 +52,11 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         );
     }
 
-    return <>{children}</>;
+    return (
+        <AbilityContext.Provider value={ability}>
+            {children}
+        </AbilityContext.Provider>
+    );
 }
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {

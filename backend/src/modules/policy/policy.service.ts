@@ -27,7 +27,7 @@ export class PolicyService implements OnModuleInit {
     }
 
     async findAll() {
-        return this.policyModel.find().select('-__v -createdAt -updatedAt').exec();
+        return this.policyModel.find({ is_active: true }).select('-__v -createdAt -updatedAt').exec();
     }
 
     getPermissions() {

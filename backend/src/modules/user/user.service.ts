@@ -24,12 +24,24 @@ export class UserService {
                 path: 'active_role',
                 match: { is_deleted: false },
                 select: 'role role_display_name desc',
+                populate: {
+                    path: 'policies',
+                    select: 'action subject fields conditions inverted reason'
+                }
             })
             .populate({
                 path: 'roles',
                 match: { is_deleted: false },
                 select: 'role role_display_name desc',
-            });
+            })
+            .populate({
+                path: 'policies.allow',
+                select: 'action subject fields conditions inverted reason'
+            })
+            .populate({
+                path: 'policies.deny',
+                select: 'action subject fields conditions inverted reason'
+            })
 
         if (!user_data) throw new BadRequestException('User not found');
         return { message: 'User fetched successfully', data: user_data };
