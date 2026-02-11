@@ -49,13 +49,13 @@ export class ChatController {
     }
 
     @Get(':id/conversation')
-    @RequireAbacPolicy({ resource: 'conversation', action: 'read' })
+    // @RequireAbacPolicy({ resource: 'conversation', action: 'read' })
     findConversations(@Param('id') chat_id: string, @Req() req: Request) {
         return this.chatService.findConversations(chat_id, req);
     }
 
     @Post(':id/conversation')
-    @RequireAbacPolicy({ resource: 'conversation', action: 'create' })
+    // @RequireAbacPolicy({ resource: 'conversation', action: 'create' })
     createConversation(@Param('id') id: string, @Body() body: ConverseDto, @Res() res: Response, @LoggedInUser() user: LoggedInUser) {
         return this.chatService.createConversation(res, id, body, user);
     }
