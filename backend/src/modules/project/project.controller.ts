@@ -3,10 +3,10 @@ import { ProjectService } from './project.service';
 import { AddMemberDto, CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import type { Request } from 'express';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('project')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class ProjectController {
     constructor(private readonly projectService: ProjectService) {}
 

@@ -2,17 +2,17 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards,
 import { ChatService } from './chat.service';
 import { ConverseDto, CreateChatDto, UpdateChatDto } from './dto/chat.dto';
 import type { Response, Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ConfigService } from '@nestjs/config';
 import { CaslGuard } from 'src/casl/casl.guard';
 import { CheckAbilities } from 'src/casl/casl.decorator';
 import { Action } from 'src/casl/casl-ability.factory';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 @Controller('chat')
-@UseGuards(AuthGuard('jwt'), CaslGuard)
+@UseGuards(JwtAuthGuard, CaslGuard)
 export class ChatController {
     constructor(
         private readonly chatService: ChatService,

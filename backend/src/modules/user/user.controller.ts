@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpCode, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, emailChangeDto, EmailVerificationDto, UpdatePersonalInfoDto, UpdateUserDto } from './dto/user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { IUser } from './schemas/user.schema';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('user')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class UserController {
     constructor(private readonly userService: UserService) {}
 

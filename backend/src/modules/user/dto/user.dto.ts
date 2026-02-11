@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsNotEmpty, IsNumber, IsOptional, Max, MaxLength, MinLength, ValidateIf } from 'class-validator';
 import { Policy } from 'src/modules/policy/schemas/policy.schema';
+import { IUser } from '../schemas/user.schema';
 
 export class CreateUserDto {
     @IsNotEmpty()

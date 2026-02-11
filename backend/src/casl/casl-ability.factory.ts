@@ -23,23 +23,18 @@ export class CaslAbilityFactory {
     createForUser(user: IAuthUser) {
         const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
 
-        // Start with role policies if active_role exists
         if (user.active_role?.policies) {
             this.applyPolicies(user.active_role.policies, can, cannot);
         }
 
-        // Apply user-specific allow policies (these override role policies)
         if (user.policies?.allow) {
             this.applyPolicies(user.policies.allow, can, cannot);
         }
 
-        // Apply user-specific deny policies (these have highest priority)
         if (user.policies?.deny) {
-            // Deny policies are inverted by default
             user.policies.deny.forEach(policy => {
                 const action = policy.action as Action;
                 const subject = policy.subject as any;
-                
                 if (policy.conditions) {
                     cannot(action, subject, policy.conditions);
                 } else {
@@ -61,12 +56,9 @@ export class CaslAbilityFactory {
         policies.forEach(policy => {
             const action = policy.action as Action;
             const subject = policy.subject as any;
-            
+
             if (policy.inverted) {
-                // This is a "cannot" rule
                 if (policy.fields && policy.fields.length > 0) {
-                    // CASL doesn't fully support field-level "cannot" with conditions together
-                    // We apply the condition if it exists
                     cannot(action, subject, policy.conditions || {});
                 } else if (policy.conditions) {
                     cannot(action, subject, policy.conditions);
@@ -74,16 +66,11 @@ export class CaslAbilityFactory {
                     cannot(action, subject);
                 }
             } else {
-                // This is a "can" rule
                 if (policy.fields && policy.fields.length > 0) {
-                    // Field-level permissions
-                    // Note: CASL handles fields differently; they're specified in the third parameter
                     can(action, subject, policy.fields);
                 } else if (policy.conditions) {
-                    // Conditional permissions
                     can(action, subject, policy.conditions);
                 } else {
-                    // Simple permissions
                     can(action, subject);
                 }
             }

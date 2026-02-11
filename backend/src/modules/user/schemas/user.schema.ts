@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { compareSync, hashSync, genSaltSync, genSalt, hash } from 'bcrypt';
-import { HydratedDocument, Schema as MongoSchema, Types } from 'mongoose';
+import { HydratedDocument, Schema as MongoSchema, Types, UpdateQuery } from 'mongoose';
 import { IPolicy } from 'src/modules/policy/policy.interface';
 import { Policy } from 'src/modules/policy/schemas/policy.schema';
 import type { IRole } from 'src/modules/role/schemas/role.schema';
@@ -49,7 +49,7 @@ export class User {
     roles: Types.ObjectId[];
     @Prop({ type: MongoSchema.Types.ObjectId, ref: 'Role', default: null })
     active_role: Types.ObjectId;
-    
+
     @Prop({
         type: {
             allow: [{ type: Types.ObjectId, ref: Policy.name }],
@@ -99,12 +99,19 @@ UserSchema.pre('save', async function () {
 });
 
 UserSchema.pre('findOneAndUpdate', async function () {
-    const update = this.getUpdate() as any;
-    if (!update) return;
-    if (update.password) {
-        const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
-        const salt = await genSalt(saltRounds);
-        update.password = await hash(update.password, salt);
-        this.setUpdate(update);
-    }
+    const update = this.getUpdate();
+    if (!update || Array.isArray(update)) return;
+
+    const updateQuery = update as UpdateQuery<IUser>;
+    const password = updateQuery.password || updateQuery.$set?.password;
+    if (!password) return;
+
+    const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
+    const salt = await genSalt(saltRounds);
+    const hashed = await hash(password, salt);
+
+    if (updateQuery.password) updateQuery.password = hashed;
+    if (updateQuery.$set?.password) updateQuery.$set.password = hashed;
+
+    this.setUpdate(update);
 });

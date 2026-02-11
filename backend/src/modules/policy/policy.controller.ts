@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PolicyService } from './policy.service';
-import { AuthGuard } from '@nestjs/passport';
 import { CreatePolicyDto, UpdatePolicyDto, AddPoliciesToUserDto } from './dto/policy.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('policy')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class PolicyController {
     constructor(private readonly policyService: PolicyService) {}
 

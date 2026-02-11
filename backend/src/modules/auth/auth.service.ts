@@ -35,14 +35,6 @@ export class AuthService {
             user.active_role = user.roles?.[0];
         }
 
-        let policies = new Set<string>();
-        // if (user?.active_role?.role !== UserRoleEnum.Admin) {
-        //     policies = new Set([
-        //         ...(user.active_role?.policy?.map(p => p.resource)?.filter(p => p.includes('view')) || []),
-        //         ...(user.policies?.map(p => p.resource)?.filter(p => p.includes('view')) || [])
-        //     ]);
-        // }
-
         const payload: { id: string } = {
             id: user._id.toString(),
         };
@@ -54,7 +46,7 @@ export class AuthService {
             sameSite: 'lax',
         });
 
-        return res.send({ message: 'Login successful', data: user, policies: Array.from(policies) });
+        return res.send({ message: 'Login successful', data: user });
     }
 
     async signup(res: Response, body: CreateUserDto) {
