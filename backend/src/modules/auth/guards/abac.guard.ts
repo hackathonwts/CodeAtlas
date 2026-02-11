@@ -28,12 +28,8 @@ export class AbacGuard implements CanActivate {
             return true;
         }
 
-        const userAllowPolicies: AbacPolicy[] = user.policy?.allow || [];
-        const userDenyPolicies: AbacPolicy[] = user.policy?.deny || [];
+        const userAllowPolicies: AbacPolicy[] = user.policy || [];
         const rolePolicies: AbacPolicy[] = user.active_role.policy || [];
-
-        const denyMatch = this.findMatchingPolicy(userDenyPolicies, requiredPolicy);
-        if (denyMatch) throw new ForbiddenException(`Access denied by user policy`);
 
         const userAllowMatch = this.findMatchingPolicy(userAllowPolicies, requiredPolicy);
         if (userAllowMatch) {
