@@ -4,18 +4,20 @@ import { IUser } from '@/interfaces/user.interface'
 
 export type AppAbility = MongoAbility<[Action, any]>;
 
+export const ability = createMongoAbility([]);
+
 export function createAbilityForUser(user: IUser): AppAbility {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
-    if (user.active_role?.policies) {
+    if (user?.active_role?.policies) {
         applyPolicies(user.active_role.policies, can, cannot);
     }
 
-    if (user.policies?.allow) {
+    if (user?.policies?.allow) {
         applyPolicies(user.policies.allow, can, cannot);
     }
 
-    if (user.policies?.deny) {
+    if (user?.policies?.deny) {
         user.policies.deny.forEach(policy => {
             const action = policy.action as Action;
             const subject = policy.subject as any;

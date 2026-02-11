@@ -17,8 +17,8 @@ import {
 import { useAppSelector } from '@/app/store/hooks';
 import { IUser } from '@/interfaces/user.interface';
 import Link from 'next/link';
-import { AbilityContext } from '@/app/providers/AbilityProvider';
 import { Action } from '@/interfaces/policy.interface';
+import { ability, createAbilityForUser } from '@/lib/ability';
 
 const data = {
     project: {
@@ -79,9 +79,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const user = useAppSelector((s) => s.auth.user) as IUser;
-    const ability = React.useContext(AbilityContext);
 
-    data.navModules = data.navModules.filter(module => ability?.can(Action.View, module.id));
+    data.navModules = data.navModules.filter(module => ability?.can(Action.View, module.id as string));
 
     return (
         <Sidebar collapsible="icon" {...props}>

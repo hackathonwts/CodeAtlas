@@ -7,10 +7,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    data: {
-        token: string;
-        user: IUser;
-    };
+    data: IUser;
     message: string;
     status: number;
     type: 'success' | 'error';
