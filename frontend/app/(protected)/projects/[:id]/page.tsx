@@ -1,17 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ParsingStats } from "./parsing-stats";
 import { ProjectHeader } from "./project-header";
 import { ProjectInfo } from "./project-info";
 import { ProjectTimeline } from "./project-timeline";
-import { StatusCards } from "./status-cards";
 import { TeamMembers } from "./team-members";
 import { getProjectByUuidApi } from "@/app/utils/apis/projects-api";
 import { useEffect, useState } from "react";
 import { IProject } from "@/interfaces/project.interface";
 import moment from "moment";
 import { toast } from "sonner";
+import { ProjectStatus } from "./project-status";
 
 
 export default function ProjectDetailsPage() {
@@ -43,15 +42,14 @@ export default function ProjectDetailsPage() {
                 {/* Status Overview */}
                 <section>
                     <h2 className="text-lg font-semibold text-foreground mb-4">Processing Status</h2>
-                    <StatusCards />
+                    <ProjectStatus />
                 </section>
 
                 {/* Main Content Grid */}
                 <div className="grid gap-6 lg:grid-cols-3">
-                    {/* Left Column - Timeline & Team */}
-                    <div className="lg:col-span-2 space-y-6">
+                    {/* Left Column - Timeline */}
+                    <div className="lg:col-span-2">
                         <ProjectTimeline />
-                        <ParsingStats />
                     </div>
 
                     {/* Right Column - Info & Members */}
