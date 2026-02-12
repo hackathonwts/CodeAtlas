@@ -24,23 +24,9 @@ export class ProjectService {
         @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
         @InjectModel(ProjectDescription.name) private projectDescriptionModel: Model<ProjectDescriptionDocument>,
         @InjectModel(ProjectMarkdown.name) private projectMarkdownModel: Model<ProjectMarkdownDocument>,
-        // @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
+        @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
-    ) {
-        // this.kafkaClient.producer.send({
-        //     topic: KAFKA_TOPICS.PARSER_CREATE.topic,
-        //     messages: [
-        //         {
-        //             key: "6985e7c088d1484801f6f34d",
-        //             value: JSON.stringify({
-        //                 _id: '6985e7c088d1484801f6f34d',
-        //                 name: "asdasd",
-        //                 description: "",
-        //             }),
-        //         },
-        //     ],
-        // });
-    }
+    ) { }
 
     async create(createProjectDto: CreateProjectDto, user: LoggedInUser) {
         const createdProject = await new this.projectModel({
@@ -53,19 +39,19 @@ export class ProjectService {
             projectName: createProjectDto.title,
         });
 
-        // this.kafkaClient.producer.send({
-        //     topic: KAFKA_TOPICS.PARSER_CREATE.topic,
-        //     messages: [
-        //         {
-        //             key: createdProject._id.toString(),
-        //             value: JSON.stringify({
-        //                 _id: createdProject._id,
-        //                 name: createProjectDto.title,
-        //                 description: createProjectDto.description,
-        //             }),
-        //         },
-        //     ],
-        // });
+        this.kafkaClient.producer.send({
+            topic: KAFKA_TOPICS.PARSER_CREATE.topic,
+            messages: [
+                {
+                    key: createdProject._id.toString(),
+                    value: JSON.stringify({
+                        _id: createdProject._id,
+                        name: createProjectDto.title,
+                        description: createProjectDto.description,
+                    }),
+                },
+            ],
+        });
 
         return createdProject;
     }
@@ -171,19 +157,19 @@ export class ProjectService {
         const update = await this.projectModel.findByIdAndUpdate(id, { ...updateProjectDto, updatedAt: new Date() }, { new: true })
         if (!update) throw new Error('Project not found');
 
-        // this.kafkaClient.producer.send({
-        //     topic: KAFKA_TOPICS.PARSER_CREATE.topic,
-        //     messages: [
-        //         {
-        //             key: update._id.toString(),
-        //             value: JSON.stringify({
-        //                 _id: update._id,
-        //                 name: update.title,
-        //                 description: update.description,
-        //             }),
-        //         },
-        //     ],
-        // });
+        this.kafkaClient.producer.send({
+            topic: KAFKA_TOPICS.PARSER_CREATE.topic,
+            messages: [
+                {
+                    key: update._id.toString(),
+                    value: JSON.stringify({
+                        _id: update._id,
+                        name: update.title,
+                        description: update.description,
+                    }),
+                },
+            ],
+        });
 
         return update;
     }
