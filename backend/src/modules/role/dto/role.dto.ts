@@ -1,7 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEnum, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
-import { Policy } from 'src/modules/policy/schemas/policy.schema';
-import { UserRoleEnum } from '../schemas/role.schema';
+import { IRole, UserRoleEnum } from '../schemas/role.schema';
 
 export class CreateRoleDto {
     @IsNotEmpty()
@@ -18,7 +17,7 @@ export class CreateRoleDto {
     desc: string;
 
     @IsOptional()
-    policy: Policy[];
+    policies: string[];
 }
 
 export class UpdateRoleDto extends PartialType(CreateRoleDto) {}

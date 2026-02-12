@@ -1,11 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Sse, UseGuards } from '@nestjs/common';
 import { Observable, Subject } from 'rxjs';
 import { NotificationService } from './notification.service';
-import { AuthGuard } from '@nestjs/passport';
-import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
-import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
 import { NotificationTemplateKey } from './schemas/notification-template.schema';
 import { CreateNotificationTemplateDto } from './dto/notification-template.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('notification')
 export class NotificationController {
@@ -44,36 +42,31 @@ export class NotificationController {
     // Template Management Endpoints
 
     @Post('templates')
-    @UseGuards(AuthGuard('jwt'), AbacGuard)
-    @RequireAbacPolicy({ resource: 'notification', action: 'create' })
+    @UseGuards(JwtAuthGuard)
     createOrUpdateTemplate(@Body() body: CreateNotificationTemplateDto) {
         return this.notificationService.upsertTemplate(body);
     }
 
     @Get('templates')
-    @UseGuards(AuthGuard('jwt'), AbacGuard)
-    @RequireAbacPolicy({ resource: 'notification', action: 'read' })
+    @UseGuards(JwtAuthGuard)
     getTemplates() {
         return this.notificationService.getTemplates();
     }
 
     @Get('templates/:key')
-    @UseGuards(AuthGuard('jwt'), AbacGuard)
-    @RequireAbacPolicy({ resource: 'notification', action: 'read' })
+    @UseGuards(JwtAuthGuard)
     getTemplateByKey(@Param('key') key: string) {
         return this.notificationService.getTemplateByKey(key as NotificationTemplateKey);
     }
 
     @Delete('templates/:key')
-    @UseGuards(AuthGuard('jwt'), AbacGuard)
-    @RequireAbacPolicy({ resource: 'notification', action: 'delete' })
+    @UseGuards(JwtAuthGuard)
     deleteTemplate(@Param('key') key: string) {
         return this.notificationService.deleteTemplate(key as NotificationTemplateKey);
     }
 
     @Post('templates/seed')
-    @UseGuards(AuthGuard('jwt'), AbacGuard)
-    @RequireAbacPolicy({ resource: 'notification', action: 'create' })
+    @UseGuards(JwtAuthGuard)
     seedTemplates() {
         return this.notificationService.seedTemplates();
     }

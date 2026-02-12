@@ -3,45 +3,51 @@ import { ProjectService } from './project.service';
 import { AddMemberDto, CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import type { Request } from 'express';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
-import { AuthGuard } from '@nestjs/passport';
-import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
-import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CheckAbilities } from 'src/casl/casl.decorator';
+import { Action } from 'src/casl/casl-ability.factory';
 
 @Controller('project')
-@UseGuards(AuthGuard('jwt'), AbacGuard)
+@UseGuards(JwtAuthGuard)
 export class ProjectController {
-    constructor(private readonly projectService: ProjectService) {}
+    constructor(private readonly projectService: ProjectService) { }
 
     // Project APIs //
 
     @Post()
     @HttpCode(200)
-    @RequireAbacPolicy({ resource: 'project', action: 'create' })
+    @CheckAbilities({ action: Action.Create, subject: 'Project' })
     create(@Body() createProjectDto: CreateProjectDto, @LoggedInUser() user: LoggedInUser) {
         return this.projectService.create(createProjectDto, user);
     }
 
     @Get()
     @HttpCode(200)
-    @RequireAbacPolicy({ resource: 'project', action: 'read' })
+    @CheckAbilities({ action: Action.View, subject: 'Project' })
     findAll(@Req() req: Request) {
         return this.projectService.findAll(req);
     }
 
     @Get(':id')
-    @RequireAbacPolicy({ resource: 'project', action: 'read' })
+    @CheckAbilities({ action: Action.Read, subject: 'Project' })
     findOne(@Param('id') id: string) {
         return this.projectService.findOne(id);
     }
 
+    @Get('by-uuid/:uuid')
+    @CheckAbilities({ action: Action.Read, subject: 'Project' })
+    findOneByUuid(@Param('uuid') uuid: string) {
+        return this.projectService.findOneByUuid(uuid);
+    }
+
     @Patch(':id')
-    @RequireAbacPolicy({ resource: 'project', action: 'update' })
+    @CheckAbilities({ action: Action.Update, subject: 'Project' })
     update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
         return this.projectService.update(id, updateProjectDto);
     }
 
     @Delete(':id')
-    @RequireAbacPolicy({ resource: 'project', action: 'delete' })
+    @CheckAbilities({ action: Action.Delete, subject: 'Project' })
     remove(@Param('id') id: string) {
         return this.projectService.remove(id);
     }
@@ -49,24 +55,25 @@ export class ProjectController {
     // Project Members APIs //
 
     @Post(':id/members')
-    @RequireAbacPolicy({ resource: 'project-member', action: 'create' })
+    @CheckAbilities({ action: Action.Create, subject: 'Member' })
     addMember(@Body() body: AddMemberDto, @Req() req: Request) {
         return this.projectService.addMember(req.params.id as string, body);
     }
 
     @Get(':id/members')
-    @RequireAbacPolicy({ resource: 'project-member', action: 'read' })
+    @CheckAbilities({ action: Action.View, subject: 'Member' })
     getMembers(@Param('id') id: string, @Req() req: Request) {
         return this.projectService.getMembers(id, req);
     }
 
     @Delete(':id/members/:member_id')
-    @RequireAbacPolicy({ resource: 'project-member', action: 'delete' })
+    @CheckAbilities({ action: Action.Delete, subject: 'Member' })
     removeMember(@Param('member_id') member_id: string) {
         return this.projectService.removeMember(member_id);
     }
 
     @Patch(':id/members/:member_id')
+    @CheckAbilities({ action: Action.Update, subject: 'Member' })
     updateMemberPermission(@Param('member_id') member_id: string, @Body() body: AddMemberDto) {
         return this.projectService.updateMemberPermission(member_id, body);
     }

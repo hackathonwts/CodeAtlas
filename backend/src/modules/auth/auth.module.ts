@@ -5,12 +5,15 @@ import { User, UserSchema } from 'src/modules/user/schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { JwtModule } from '@nestjs/jwt/dist/jwt.module';
-import { JwtStrategy } from './guards/jwt.strategy';
 import { Role, RoleSchema } from 'src/modules/role/schemas/role.schema';
 import { UserRepository } from './user.repository';
+import { CaslModule } from 'src/casl/casl.module';
+import { JwtStrategy } from './jwt.strategy';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
     imports: [
+        CaslModule,
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
             { name: Role.name, schema: RoleSchema },
@@ -26,6 +29,6 @@ import { UserRepository } from './user.repository';
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, UserRepository, JwtStrategy]
+    providers: [AuthService, UserRepository, JwtStrategy, JwtAuthGuard]
 })
 export class AuthModule {}

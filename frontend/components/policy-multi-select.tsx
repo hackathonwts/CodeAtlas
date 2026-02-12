@@ -1,6 +1,7 @@
 'use client';
 
 import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import { Label } from '@/components/ui/label';
 import { IPolicy } from '@/interfaces/policy.interface';
 
@@ -14,9 +15,11 @@ interface PolicyMultiSelectProps {
 interface PolicyOption {
     value: string;
     label: string;
-    resource: string;
+    subject: string;
     policy: IPolicy;
 }
+
+const animatedComponents = makeAnimated();
 
 const reactSelectStyles = {
     control: (base: any, state: { isFocused: any }) => ({
@@ -38,21 +41,23 @@ const reactSelectStyles = {
 export function PolicyMultiSelect({ policies, availablePolicies, onChange, label = 'Select Policies', }: PolicyMultiSelectProps) {
     const options: PolicyOption[] = availablePolicies.map((policy) => ({
         value: policy._id,
-        label: `${policy.resource} - ${policy.action}`,
-        resource: policy.resource,
+        label: `${policy.subject}:${policy.action}`?.toUpperCase(),
+        subject: policy.subject,
         policy,
-        selected: policies.some((p) => p.action === policy.action && p.resource === policy.resource),
     }));
 
     const groupedOptions = options.reduce((groups, option) => {
-        const resource = option.resource;
-        if (!groups[resource]) groups[resource] = [];
-        groups[resource].push(option);
+        const subject = option.subject;
+        if (!groups[subject]) groups[subject] = [];
+        groups[subject].push(option);
         return groups;
     }, {} as Record<string, PolicyOption[]>);
 
-    const formattedOptions = Object.entries(groupedOptions).map(([resource, opts]) => ({ label: resource, options: opts }));
-    const selectedOptions = availablePolicies.filter((policy) => policies.some((p) => p.action === policy.action && p.resource === policy.resource)).map((policy) => policy._id);
+    const formattedOptions = Object.entries(groupedOptions).map(([subject, opts]) => ({ label: subject, options: opts }));
+
+    // Match by _id for accurate pre-selection
+    const selectedPolicyIds = policies.map((p) => p._id);
+    const selectedOptions = options.filter((opt) => selectedPolicyIds.includes(opt.value));
 
     const handleChange = (selected: readonly PolicyOption[]) => {
         const selectedPolicies = selected.map((opt) => opt.policy);
@@ -65,10 +70,12 @@ export function PolicyMultiSelect({ policies, availablePolicies, onChange, label
             <Select
                 isMulti
                 options={formattedOptions}
-                value={[...options.filter((opt) => selectedOptions.includes(opt.value))]}
-                onChange={handleChange as any}
+                value={selectedOptions}
+                onChange={handleChange}
                 placeholder="Select policies..."
                 styles={reactSelectStyles}
+                closeMenuOnSelect={false}
+                components={animatedComponents}
             />
         </div>
     );

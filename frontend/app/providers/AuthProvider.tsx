@@ -8,10 +8,12 @@ import { setUser, setLoading } from '../store/authSlice';
 import type { RootState } from '../store/store';
 import { meApi } from '../utils/apis/auth-api';
 import ServerDownPage from '@/components/server-down';
+import { ability, createAbilityForUser } from '@/lib/ability';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
+
     const [isInitialized, setIsInitialized] = useState(false);
     const [serverDown, setServerDown] = useState(false);
 
@@ -22,6 +24,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
                     dispatch(setLoading(true));
                     const result = await meApi();
                     dispatch(setUser(result.data));
+
+                    const newAbility = createAbilityForUser(result.data);
+                    ability.update(newAbility.rules);
                 } catch (error: any) {
                     setServerDown(parseInt(error?.status) >= 500);
                 } finally {

@@ -48,7 +48,6 @@ export class ApiExceptionFilter implements ExceptionFilter {
                     message = 'Too Many Requests';
                     break;
                 case HttpStatus.FORBIDDEN:
-                    message = 'You do not have permission to access this resource';
                     break;
             }
         } else {

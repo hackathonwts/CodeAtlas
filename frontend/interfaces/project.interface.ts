@@ -14,4 +14,27 @@ export interface IProject {
   }
   createdAt?: string;
   updatedAt?: string;
+
+  uuid: string;
+  scan_version?: string;
+  status?: ProjectStatusEnum;
+}
+
+export enum ProjectStatusEnum {
+  Active = 'Active',
+  Inactive = 'Inactive',
+  Archived = 'Archived',
+}
+
+export enum WorkflowStatus {
+  IDLE = 'IDLE',
+  RUNNING = 'RUNNING',
+  FAILED = 'FAILED',
+  COMPLETED = 'COMPLETED',
+}
+
+export enum WorkflowStep {
+  CLONING = 'CLONING',
+  PARSING = 'PARSING',
+  VECTORIZE = 'VECTORIZE',
 }

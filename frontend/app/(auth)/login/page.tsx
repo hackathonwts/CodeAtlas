@@ -16,6 +16,7 @@ import { useAppDispatch } from '@/app/store/hooks';
 import { setUser } from '@/app/store/authSlice';
 import { loginApi } from '@/app/utils/apis/auth-api';
 import { Eye, EyeOff } from 'lucide-react';
+import { ability, createAbilityForUser } from '@/lib/ability';
 
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -42,7 +43,10 @@ export default function LoginPage() {
         setIsLoading(true);
         try {
             const result = await loginApi(data.email, data.password);
-            dispatch(setUser(result.data.user));
+            dispatch(setUser(result.data));
+
+            const newAbility = createAbilityForUser(result.data);
+            ability.update(newAbility.rules);
 
             toast.success('Login successful!', { description: 'Welcome back to your account' });
             router.push('/dashboard');

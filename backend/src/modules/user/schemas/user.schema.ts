@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { compareSync, hashSync, genSaltSync, genSalt, hash } from 'bcrypt';
-import { HydratedDocument, Schema as MongoSchema, Types } from 'mongoose';
-import { Policy, PolicySchema } from 'src/modules/policy/schemas/policy.schema';
+import { HydratedDocument, Schema as MongoSchema, Types, UpdateQuery } from 'mongoose';
+import { IPolicy } from 'src/modules/policy/policy.interface';
+import { Policy } from 'src/modules/policy/schemas/policy.schema';
+import type { IRole } from 'src/modules/role/schemas/role.schema';
 
 export enum UserStatus {
     Active = 'Active',
@@ -17,17 +19,29 @@ export interface IUser {
     password: string;
     email_verification_otp: number | null;
     status: string;
-    roles?: Types.ObjectId[];
-    active_role?: Types.ObjectId;
-    policy?: Policy[];
+    roles?: IRole[];
+    active_role?: IRole;
+    policies?: {
+        allow: IPolicy[];
+        deny: IPolicy[];
+    };
     is_deleted: boolean;
 
     createdAt?: Date;
     updatedAt?: Date;
 }
 
+@Schema({ _id: false })
+class PolicyAccess {
+    @Prop({ type: [Types.ObjectId], ref: Policy.name, default: [] })
+    allow: Types.ObjectId[];
+
+    @Prop({ type: [Types.ObjectId], ref: Policy.name, default: [] })
+    deny: Types.ObjectId[];
+}
+
 @Schema({ timestamps: true, versionKey: false })
-export class User implements IUser {
+export class User {
     @Prop({ type: String, trim: true, default: '' })
     full_name: string;
     @Prop({ type: String, trim: true, default: '' })
@@ -44,8 +58,9 @@ export class User implements IUser {
     roles: Types.ObjectId[];
     @Prop({ type: MongoSchema.Types.ObjectId, ref: 'Role', default: null })
     active_role: Types.ObjectId;
-    @Prop({ type: [PolicySchema], default: [] })
-    policy: Policy[];
+
+    @Prop({ type: PolicyAccess, default: { allow: [], deny: [] } })
+    policies: { allow: Types.ObjectId[]; deny: Types.ObjectId[]; };
 
     @Prop({ type: Boolean, default: false, index: true })
     is_deleted: boolean;
@@ -84,12 +99,19 @@ UserSchema.pre('save', async function () {
 });
 
 UserSchema.pre('findOneAndUpdate', async function () {
-    const update = this.getUpdate() as any;
-    if (!update) return;
-    if (update.password) {
-        const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
-        const salt = await genSalt(saltRounds);
-        update.password = await hash(update.password, salt);
-        this.setUpdate(update);
-    }
+    const update = this.getUpdate();
+    if (!update || Array.isArray(update)) return;
+
+    const updateQuery = update as UpdateQuery<IUser>;
+    const password = updateQuery.password || updateQuery.$set?.password;
+    if (!password) return;
+
+    const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
+    const salt = await genSalt(saltRounds);
+    const hashed = await hash(password, salt);
+
+    if (updateQuery.password) updateQuery.password = hashed;
+    if (updateQuery.$set?.password) updateQuery.$set.password = hashed;
+
+    this.setUpdate(update);
 });

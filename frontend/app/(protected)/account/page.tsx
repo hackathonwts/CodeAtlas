@@ -197,7 +197,7 @@ export default function AccountPage() {
     }, [user?.email]);
 
     return (
-        <div className="container mx-auto py-6">
+        <div className="container mx-auto py-1">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Account</h1>

@@ -17,6 +17,8 @@ import {
 import { useAppSelector } from '@/app/store/hooks';
 import { IUser } from '@/interfaces/user.interface';
 import Link from 'next/link';
+import { Action } from '@/interfaces/policy.interface';
+import { ability, createAbilityForUser } from '@/lib/ability';
 
 const data = {
     project: {
@@ -24,39 +26,44 @@ const data = {
         subtitle: 'Admin Panel',
         logo: BotMessageSquare,
     },
-    navMain: [
+    navModules: [
         {
             title: 'Dashboard',
             url: '/dashboard',
             icon: PieChart,
         },
         {
+            id: 'User',
             title: 'Users',
             url: '/users',
             icon: Users2,
         },
         {
+            id: 'Role',
             title: 'Roles & Permissions',
             url: '/roles-permissions',
             icon: Frame,
         },
         {
+            id: 'Project',
             title: 'Projects',
             url: '/projects',
             icon: FolderCodeIcon,
         },
         {
+            id: 'Notification',
             title: 'Notification Templates',
             url: '/notification-templates',
             icon: Bell,
         },
         {
+            id: 'Chat',
             title: 'Chat',
             url: '/chat',
             icon: MessageCircle,
         },
     ],
-    projects: [
+    recentProjects: [
         {
             name: 'Design Engineering',
             url: '#',
@@ -72,6 +79,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const user = useAppSelector((s) => s.auth.user) as IUser;
+
+    data.navModules = data.navModules.filter(module => ability?.can(Action.View, module.id as string));
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -92,8 +101,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
+                <NavMain items={data.navModules} />
+                <NavProjects projects={data.recentProjects} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={user} />

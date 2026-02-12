@@ -9,10 +9,10 @@ import { Model } from 'mongoose';
 import { User, UserDocument, UserStatus } from 'src/modules/user/schemas/user.schema';
 import { JwtPayloadType } from 'src/common/jwt.type';
 import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
-import { UserRepository } from '../user.repository';
+import { UserRepository } from './user.repository';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
         private readonly userRepository: UserRepository,

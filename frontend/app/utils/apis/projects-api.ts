@@ -42,3 +42,7 @@ export const deleteProjectApi = async (id: string): Promise<IProject> => {
 export const getProjectApi = async (id: string): Promise<IProject> => {
     return get<IProject>(`/project/${id}`);
 };
+
+export const getProjectByUuidApi = async (id: string): Promise<{ uuid: string }> => {
+    return get<{ uuid: string }>(`/project/by-uuid/${id}`);
+};

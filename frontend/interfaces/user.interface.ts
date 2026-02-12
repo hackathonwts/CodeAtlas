@@ -10,6 +10,9 @@ export interface IUser {
     createdAt?: string
     active_role: IRole
     roles: IRole[]
-    policy?: IPolicy[]
+    policies?: {
+        allow: IPolicy[]
+        deny: IPolicy[]
+    }
     status?: string
 }

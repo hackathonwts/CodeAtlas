@@ -1,17 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpCode, Put, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, emailChangeDto, EmailVerificationDto, UpdatePersonalInfoDto, UpdateUserDto } from './dto/user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
-import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
 import type { Request, Response } from 'express';
 import { IUser } from './schemas/user.schema';
 import { LoggedInUser } from 'src/common/logged-in-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CheckAbilities } from 'src/casl/casl.decorator';
+import { Action } from 'src/casl/casl-ability.factory';
 
 @Controller('user')
-@UseGuards(AuthGuard('jwt'), AbacGuard)
+@UseGuards(JwtAuthGuard)
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) { }
 
     @Get('me')
     @HttpCode(200)
@@ -44,31 +44,31 @@ export class UserController {
     }
 
     @Post()
-    @RequireAbacPolicy({ resource: 'user', action: 'create' })
+    @CheckAbilities({ action: Action.Create, subject: 'User' })
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
 
     @Get()
-    @RequireAbacPolicy({ resource: 'user', action: 'read' })
+    @CheckAbilities({ action: Action.View, subject: 'User' })
     findAll(@Req() req: Request) {
         return this.userService.findAll(req);
     }
 
     @Get(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'read' })
+    @CheckAbilities({ action: Action.Read, subject: 'User' })
     findOne(@Param('id') id: string) {
         return this.userService.findOne(id);
     }
 
     @Patch(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'update' })
+    @CheckAbilities({ action: Action.Update, subject: 'User' })
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.update(id, updateUserDto);
     }
 
     @Delete(':id')
-    @RequireAbacPolicy({ resource: 'user', action: 'delete' })
+    @CheckAbilities({ action: Action.Delete, subject: 'User' })
     remove(@Param('id') id: string) {
         return this.userService.remove(id);
     }

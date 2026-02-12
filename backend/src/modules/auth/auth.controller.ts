@@ -3,8 +3,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/auth.dto';
 import type { Response } from 'express';
 import { CreateUserDto } from 'src/modules/user/dto/user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +24,7 @@ export class AuthController {
 
     @Post('logout')
     @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtAuthGuard)
     logout(@Res() res: Response) {
         res.clearCookie(ADMIN_AUTH_TOKEN_NAME);
         return res.send({ message: 'Logout successful' });

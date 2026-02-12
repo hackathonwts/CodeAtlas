@@ -16,26 +16,19 @@ import {
 import { useState } from "react"
 
 interface ProjectInfoProps {
-    repoUrl: string
-    branch: string
-    lastCommit: string
-    createdAt: string
-    framework: string
-    nodeVersion: string
+    repoUrl?: string
+    branch?: string
+    lastCommit?: string
+    createdAt?: string
+    framework?: string
+    nodeVersion?: string
 }
 
-export function ProjectInfo({
-    repoUrl = "https://github.com/acme/nestjs-api",
-    branch = "main",
-    lastCommit = "feat: add user authentication",
-    createdAt = "Jan 15, 2026",
-    framework = "NestJS 10.x",
-    nodeVersion = "20.x",
-}: ProjectInfoProps) {
+export function ProjectInfo({ repoUrl, branch, lastCommit, createdAt, framework, nodeVersion }: ProjectInfoProps) {
     const [copied, setCopied] = useState(false)
 
     const handleCopy = async () => {
-        await navigator.clipboard.writeText(repoUrl)
+        await navigator.clipboard.writeText(repoUrl ?? "")
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
     }
@@ -43,7 +36,7 @@ export function ProjectInfo({
     const infoItems = [
         {
             label: "Repository",
-            value: repoUrl.replace("https://github.com/", ""),
+            value: repoUrl?.replace("https://github.com/", "") ?? "",
             icon: <LinkIcon className="h-4 w-4" />,
             action: (
                 <Button
@@ -84,7 +77,7 @@ export function ProjectInfo({
 
     return (
         <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
+            <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-foreground">Project Information</CardTitle>
                     <Badge className="bg-accent/20 text-accent">
@@ -92,12 +85,9 @@ export function ProjectInfo({
                     </Badge>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-1">
                 {infoItems.map((item) => (
-                    <div
-                        key={item.label}
-                        className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                    >
+                    <div key={item.label} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                         <div className="flex items-center gap-3">
                             <div className="p-1.5 rounded-md bg-secondary text-muted-foreground">
                                 {item.icon}

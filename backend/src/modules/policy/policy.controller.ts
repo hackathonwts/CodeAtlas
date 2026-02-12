@@ -1,17 +1,19 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { PolicyService } from './policy.service';
-import { AuthGuard } from '@nestjs/passport';
-import { AbacGuard } from 'src/modules/auth/guards/abac.guard';
-import { RequireAbacPolicy } from 'src/modules/auth/decorators/abac.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('policy')
-@UseGuards(AuthGuard('jwt'), AbacGuard)
+@UseGuards(JwtAuthGuard)
 export class PolicyController {
     constructor(private readonly policyService: PolicyService) {}
 
     @Get()
-    @RequireAbacPolicy({ resource: 'policy', action: 'read' })
     findAll() {
         return this.policyService.findAll();
+    }
+
+    @Post('rediscover')
+    rediscoverPolicies() {
+        return this.policyService.rediscoverPolicies();
     }
 }

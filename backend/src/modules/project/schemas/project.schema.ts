@@ -18,7 +18,7 @@ export enum WorkflowStatus {
 export enum WorkflowStep {
     CLONING = 'CLONING',
     PARSING = 'PARSING',
-    PARSING_COMPLETED = 'PARSING_COMPLETED',
+    VECTORIZE = 'VECTORIZE',
 }
 
 export interface IProject {

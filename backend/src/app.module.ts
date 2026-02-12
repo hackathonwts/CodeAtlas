@@ -9,6 +9,7 @@ import { RoleModule } from './modules/role/role.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { KafkaModule } from './kafka/kafka.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
     imports: [
@@ -24,13 +25,13 @@ import { KafkaModule } from './kafka/kafka.module';
             }),
             inject: [ConfigService],
         }),
-        KafkaModule.registerAsync({
-            useFactory: (configService: ConfigService) => ({
-                clientId: configService.getOrThrow<string>('KAFKA_APP_ID'),
-                brokers: [configService.getOrThrow<string>('KAFKA_BROKER_URL')],
-            }),
-            inject: [ConfigService],
-        }),
+        // KafkaModule.registerAsync({
+        //     useFactory: (configService: ConfigService) => ({
+        //         clientId: configService.getOrThrow<string>('KAFKA_APP_ID'),
+        //         brokers: [configService.getOrThrow<string>('KAFKA_BROKER_URL')],
+        //     }),
+        //     inject: [ConfigService],
+        // }),
         AuthModule,
         RoleModule,
         PolicyModule,
@@ -38,6 +39,7 @@ import { KafkaModule } from './kafka/kafka.module';
         ProjectModule,
         ChatModule,
         NotificationModule,
+        CaslModule,
     ],
     controllers: [],
     providers: [ConfigService, Logger],
