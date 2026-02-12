@@ -8,8 +8,7 @@ import { Policy, PolicyDocument } from '../policy/schemas/policy.schema';
 @Injectable()
 export class RoleService {
     constructor(
-        @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
-        @InjectModel(Policy.name) private readonly policyModel: Model<PolicyDocument>,
+        @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>
     ) { }
 
     async create(createRoleDto: CreateRoleDto) {

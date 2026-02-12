@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadChats } from '@/app/store/chatSlice';
 import { RootState } from '@/app/store/store';
 import { IChat } from '@/interfaces/chat.interface';
 

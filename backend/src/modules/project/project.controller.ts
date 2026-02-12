@@ -10,7 +10,7 @@ import { Action } from 'src/casl/casl-ability.factory';
 @Controller('project')
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-    constructor(private readonly projectService: ProjectService) {}
+    constructor(private readonly projectService: ProjectService) { }
 
     // Project APIs //
 
@@ -32,6 +32,12 @@ export class ProjectController {
     @CheckAbilities({ action: Action.Read, subject: 'Project' })
     findOne(@Param('id') id: string) {
         return this.projectService.findOne(id);
+    }
+
+    @Get('by-uuid/:uuid')
+    @CheckAbilities({ action: Action.Read, subject: 'Project' })
+    findOneByUuid(@Param('uuid') uuid: string) {
+        return this.projectService.findOneByUuid(uuid);
     }
 
     @Patch(':id')

@@ -163,6 +163,10 @@ export class ProjectService {
         return this.projectModel.findById(id).populate('created_by', 'full_name email');
     }
 
+    findOneByUuid(uuid: string) {
+        return this.projectModel.findOne({ uuid: uuid }).populate('created_by', 'full_name email');
+    }
+
     async update(id: string, updateProjectDto: UpdateProjectDto) {
         const update = await this.projectModel.findByIdAndUpdate(id, { ...updateProjectDto, updatedAt: new Date() }, { new: true })
         if (!update) throw new Error('Project not found');

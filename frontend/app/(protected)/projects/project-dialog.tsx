@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { IProject } from '@/interfaces/project.interface';
 import { CreateProjectPayload } from '@/app/utils/apis/projects-api';
@@ -104,7 +105,7 @@ export function ProjectDialog({ open, onOpenChange, onSubmit, project, isLoading
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="description">Description</Label>
-                            <Input
+                            <Textarea
                                 id="description"
                                 {...register('description')}
                                 placeholder="Enter project description"

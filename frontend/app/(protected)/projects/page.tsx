@@ -32,11 +32,10 @@ import {
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { formatDistance } from 'date-fns';
 import { showErrorToast } from '@/app/utils/error-handler';
+import { Pencil2Icon, TrashIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
 
-export const createColumns = (
-    onEdit: (project: IProject) => void,
-    onDelete: (project: IProject) => void,
-): ColumnDef<IProject>[] => [
+export const createColumns = (onEdit: (project: IProject) => void, onDelete: (project: IProject) => void, onView: (id: string) => void): ColumnDef<IProject>[] => [
     {
         id: 'avatar',
         header: 'Project',
@@ -141,12 +140,17 @@ export const createColumns = (
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(project._id)}>
-                            Copy project ID
+                        <DropdownMenuItem onClick={() => onView(project.uuid)}>
+                            <EyeOpenIcon />
+                            View
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onEdit(project)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEdit(project)}>
+                            <Pencil2Icon />
+                            Edit
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onDelete(project)} className="text-red-600">
+                            <TrashIcon className="text-red-600" />
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -157,6 +161,7 @@ export const createColumns = (
 ];
 
 export default function ProjectsPage() {
+    const router = useRouter();
     const dispatch = useAppDispatch();
     const { projects, isProjectsLoading } = useAppSelector((state) => state.project);
 
@@ -178,7 +183,6 @@ export default function ProjectsPage() {
     const [selectedProject, setSelectedProject] = React.useState<IProject | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    // Fetch projects
     const fetchProjects = React.useCallback(async () => {
         try {
             setError(null);
@@ -206,7 +210,6 @@ export default function ProjectsPage() {
         fetchProjects();
     }, [fetchProjects]);
 
-    // Create project
     const handleCreate = async (data: CreateProjectPayload) => {
         try {
             setIsSubmitting(true);
@@ -222,7 +225,6 @@ export default function ProjectsPage() {
         }
     };
 
-    // Update project
     const handleUpdate = async (data: UpdateProjectPayload) => {
         if (!selectedProject) return;
         try {
@@ -240,7 +242,6 @@ export default function ProjectsPage() {
         }
     };
 
-    // Delete project
     const handleDelete = async () => {
         if (!selectedProject) return;
         try {
@@ -258,19 +259,16 @@ export default function ProjectsPage() {
         }
     };
 
-    // Handle edit
     const handleEdit = (project: IProject) => {
         setSelectedProject(project);
         setIsEditDialogOpen(true);
     };
 
-    // Handle delete
     const handleDeleteClick = (project: IProject) => {
         setSelectedProject(project);
         setIsDeleteDialogOpen(true);
     };
 
-    // Handle pagination
     const handlePaginationChange = (pageIndex: number, pageSize: number) => {
         setPagination((prev) => ({
             ...prev,
@@ -279,10 +277,12 @@ export default function ProjectsPage() {
         }));
     };
 
-    const columns = createColumns(handleEdit, handleDeleteClick);
+    const handleView = (uuid: string) => router.push(`/projects/${uuid}`);
+
+    const columns = createColumns(handleEdit, handleDeleteClick, handleView);
 
     return (
-        <div className="container mx-auto py-6">
+        <div className="container mx-auto py-1">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Projects</h1>

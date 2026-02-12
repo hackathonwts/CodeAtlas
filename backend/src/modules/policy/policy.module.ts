@@ -49,8 +49,17 @@ export class PolicyModule implements OnModuleInit {
                     action: p.action,
                     subject: p.subject,
                     inverted: false,
-                    reason: `Auto-discovered from ${p.subject} controller`
+                    reason: `Auto-discovered from ${p.subject} controller`,
+                    is_active: true
                 }));
+
+                policiesToInsert.push({
+                    action: 'manage',
+                    subject: 'all',
+                    inverted: false,
+                    reason: 'Default policy to allow managing all resources',
+                    is_active: false
+                })
 
                 await this.policyModel.insertMany(policiesToInsert);
                 Logger.log(`Seeded ${policiesToInsert.length} auto-discovered policies`);

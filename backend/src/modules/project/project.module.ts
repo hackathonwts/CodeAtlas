@@ -13,11 +13,15 @@ import { Chat, ChatSchema } from '../chat/schemas/chat.schema';
 import { Conversation, ConversationSchema } from '../chat/schemas/conversation.schema';
 import { ProjectDescription, ProjectDescriptionSchema } from './schemas/description.schema';
 import { ProjectMarkdown, ProjectMarkdownSchema } from './schemas/markdown.schema';
+import { ProjectStatus, ProjectStatusSchema } from './schemas/status.schema';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             { name: Project.name, schema: ProjectSchema },
+            { name: ProjectStatus.name, schema: ProjectStatusSchema },
+            { name: ProjectDescription.name, schema: ProjectDescriptionSchema },
+            { name: ProjectMarkdown.name, schema: ProjectMarkdownSchema },
             { name: Member.name, schema: MemberSchema },
             { name: Role.name, schema: RoleSchema },
             { name: User.name, schema: UserSchema },
@@ -25,8 +29,6 @@ import { ProjectMarkdown, ProjectMarkdownSchema } from './schemas/markdown.schem
             { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
             { name: Chat.name, schema: ChatSchema },
             { name: Conversation.name, schema: ConversationSchema },
-            { name: ProjectDescription.name, schema: ProjectDescriptionSchema },
-            { name: ProjectMarkdown.name, schema: ProjectMarkdownSchema },
         ]),
     ],
     controllers: [ProjectController],

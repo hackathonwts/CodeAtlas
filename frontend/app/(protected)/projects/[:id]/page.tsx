@@ -1,46 +1,42 @@
+"use client";
 
-// const params = useParams()
-// const project_id = params[':id'] as string;
-
+import { useParams } from "next/navigation";
 import { ParsingStats } from "./parsing-stats";
 import { ProjectHeader } from "./project-header";
 import { ProjectInfo } from "./project-info";
 import { ProjectTimeline } from "./project-timeline";
 import { StatusCards } from "./status-cards";
 import { TeamMembers } from "./team-members";
-
-// const fetchProjectDetails = async (id: string) => {
-//     const response = await getProjectApi(id);
-// }
-
-// useEffect(() => {
-//     fetchProjectDetails(project_id);
-//     console.log("Project ID:", project_id);
-// }, [project_id]);
-
-
-// const params = useParams()
-// const project_id = params[':id'] as string;
-
-// const fetchProjectDetails = async (id: string) => {
-//     const response = await getProjectApi(id);
-// }
-
-// useEffect(() => {
-//     fetchProjectDetails(project_id);
-//     console.log("Project ID:", project_id);
-// }, [project_id]);
-
+import { getProjectByUuidApi } from "@/app/utils/apis/projects-api";
+import { useEffect, useState } from "react";
+import { IProject } from "@/interfaces/project.interface";
+import moment from "moment";
+import { toast } from "sonner";
 
 
 export default function ProjectDetailsPage() {
+    const params = useParams();
+    const project_uid = params[':id'] as string;
+    const [project, setProject] = useState<Partial<IProject>>({});
+
+    const fetchProject = async () => await getProjectByUuidApi(project_uid);
+    useEffect(() => {
+        if (project_uid) {
+            fetchProject().then(result => {
+                setProject(result);
+            }).catch(error => {
+                toast.error(error?.response?.data?.message || "Failed to fetch project details");
+            });
+        }
+    }, [project_uid]);
+
     return (
-        <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-1">
             <ProjectHeader
-                name="NestJS E-Commerce API"
-                description="Parse and analyze the NestJS e-commerce backend API codebase for AI-powered knowledge transfer. This project extracts modules, controllers, services, and entity relationships."
-                repoUrl="https://github.com/acme/nestjs-ecommerce-api"
-                status="active"
+                name={project.title}
+                description={project.description}
+                repoUrl={project.git_link}
+                status={project.status}
             />
 
             <div className="space-y-8">
@@ -61,10 +57,10 @@ export default function ProjectDetailsPage() {
                     {/* Right Column - Info & Members */}
                     <div className="space-y-6">
                         <ProjectInfo
-                            repoUrl="https://github.com/acme/nestjs-ecommerce-api"
-                            branch="main"
+                            repoUrl={project.git_link}
+                            branch={project.git_branch}
                             lastCommit="feat: add user authentication"
-                            createdAt="Jan 15, 2026"
+                            createdAt={moment(project.createdAt).format('LLL')}
                             framework="NestJS 10.x"
                             nodeVersion="20.x"
                         />

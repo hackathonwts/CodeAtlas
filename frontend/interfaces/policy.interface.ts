@@ -1,5 +1,6 @@
 
 export interface IPolicy {
+    _id: string;
     action: string;
     subject: string;
     fields?: string[];
