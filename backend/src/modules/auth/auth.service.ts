@@ -44,6 +44,7 @@ export class AuthService {
             httpOnly: true,
             secure: this.configService.get('NODE_ENV') === 'production',
             sameSite: 'lax',
+            maxAge: parseInt(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN')) * 1000,
         });
 
         return res.send({ message: 'Login successful', data: user });
@@ -73,6 +74,7 @@ export class AuthService {
             httpOnly: true,
             secure: this.configService.get('NODE_ENV') === 'production',
             sameSite: 'lax',
+            maxAge: parseInt(this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN')) * 1000,
         });
         return res.send({ message: 'Signup successful', data: new_user });
     }

@@ -15,7 +15,7 @@ async function bootstrap() {
 
     app.enableCors({
         origin: configService.getOrThrow<string>('CORS_ORIGIN')?.split(','),
-        credentials: true,
+        credentials: true
     });
     app.use(cookieParser());
     app.useStaticAssets(resolve('./public'));
@@ -24,7 +24,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: false, transform: true }));
     app.useGlobalFilters(new ApiExceptionFilter());
 
-    app.use((req: Request, res: Response, next: NextFunction) => {
+    app.use((req: Request, _res: Response, next: NextFunction) => {
         logger.verbose(`[${req.method}] ${req.originalUrl} -- from ${req.ip}`);
         next();
     });
