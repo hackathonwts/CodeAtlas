@@ -16,5 +16,6 @@ import { CaslModule } from 'src/casl/casl.module';
     ],
     controllers: [ChatController],
     providers: [ChatService],
+    exports: [MongooseModule],
 })
 export class ChatModule {}

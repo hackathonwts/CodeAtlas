@@ -10,20 +10,12 @@ import { NotificationService } from 'src/modules/notification/notification.servi
 import { KAFKA_CLIENT } from 'src/kafka/kafka.constants';
 import { KAFKA_TOPICS } from 'src/kafka/kafka.topics';
 import type { KafkaClient } from 'src/kafka/kafka.type';
-import { Chat, ChatDocument } from '../chat/schemas/chat.schema';
-import { Conversation, ConversationDocument } from '../chat/schemas/conversation.schema';
-import { ProjectDescription, ProjectDescriptionDocument } from './schemas/description.schema';
-import { ProjectMarkdown, ProjectMarkdownDocument } from './schemas/markdown.schema';
 
 @Injectable()
 export class ProjectService {
     constructor(
         @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
         @InjectModel(Member.name) private memberModel: Model<MemberDocument>,
-        @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
-        @InjectModel(Conversation.name) private conversationModel: Model<ConversationDocument>,
-        @InjectModel(ProjectDescription.name) private projectDescriptionModel: Model<ProjectDescriptionDocument>,
-        @InjectModel(ProjectMarkdown.name) private projectMarkdownModel: Model<ProjectMarkdownDocument>,
         @Inject(KAFKA_CLIENT) private readonly kafkaClient: KafkaClient,
         private readonly notificationService: NotificationService,
     ) { }
@@ -176,10 +168,6 @@ export class ProjectService {
 
     remove(id: string) {
         this.memberModel.deleteMany({ project_id: id }).exec();
-        this.chatModel.distinct('_id', { project_id: id }).exec().then((chats) => {
-            this.conversationModel.deleteMany({ chat_id: { $in: chats } }).exec();
-            this.chatModel.deleteMany({ project_id: id }).exec();
-        });
         return this.projectModel.findOneAndDelete({ _id: id });
     }
 }

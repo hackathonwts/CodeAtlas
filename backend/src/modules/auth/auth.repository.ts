@@ -1,5 +1,5 @@
 import { InjectModel } from "@nestjs/mongoose";
-import { IUser, User, UserDocument, UserStatus } from "../user/schemas/user.schema";
+import { User, UserDocument } from "../user/schemas/user.schema";
 import { Model, QueryFilter } from "mongoose";
 import { IPolicy } from "../policy/policy.interface";
 
@@ -25,7 +25,7 @@ export interface IAuthUser extends Omit<UserDocument, 'active_role' | 'roles' | 
     }[];
 }
 
-export class UserRepository {
+export class AuthRepository {
     constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) { }
 
     async getAuthUser(filter: QueryFilter<UserDocument>): Promise<IAuthUser | null> {

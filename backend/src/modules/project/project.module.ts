@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
-import { Role, RoleSchema } from 'src/modules/role/schemas/role.schema';
 import { MongooseModule } from '@nestjs/mongoose/dist/mongoose.module';
-import { User, UserSchema } from 'src/modules/user/schemas/user.schema';
 import { Project, ProjectSchema } from './schemas/project.schema';
 import { Member, MemberSchema } from './schemas/member.schema';
-import { NotificationSchema, Notification } from 'src/modules/notification/schemas/notification.schema';
 import { NotificationService } from 'src/modules/notification/notification.service';
-import { NotificationTemplate, NotificationTemplateSchema } from 'src/modules/notification/schemas/notification-template.schema';
-import { Chat, ChatSchema } from '../chat/schemas/chat.schema';
-import { Conversation, ConversationSchema } from '../chat/schemas/conversation.schema';
 import { ProjectDescription, ProjectDescriptionSchema } from './schemas/description.schema';
 import { ProjectMarkdown, ProjectMarkdownSchema } from './schemas/markdown.schema';
 import { ProjectStatus, ProjectStatusSchema } from './schemas/status.schema';
+import { UserModule } from '../user/user.module';
+import { RoleModule } from '../role/role.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
     imports: [
@@ -23,15 +20,13 @@ import { ProjectStatus, ProjectStatusSchema } from './schemas/status.schema';
             { name: ProjectDescription.name, schema: ProjectDescriptionSchema },
             { name: ProjectMarkdown.name, schema: ProjectMarkdownSchema },
             { name: Member.name, schema: MemberSchema },
-            { name: Role.name, schema: RoleSchema },
-            { name: User.name, schema: UserSchema },
-            { name: Notification.name, schema: NotificationSchema },
-            { name: NotificationTemplate.name, schema: NotificationTemplateSchema },
-            { name: Chat.name, schema: ChatSchema },
-            { name: Conversation.name, schema: ConversationSchema },
         ]),
+        UserModule,
+        RoleModule,
+        NotificationModule,
     ],
     controllers: [ProjectController],
     providers: [ProjectService, NotificationService],
+    exports: [MongooseModule],
 })
-export class ProjectModule {}
+export class ProjectModule { }

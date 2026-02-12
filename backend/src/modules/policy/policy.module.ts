@@ -3,23 +3,23 @@ import { PolicyService } from './policy.service';
 import { DiscoveryModule } from '@nestjs/core';
 import { InjectConnection, InjectModel, MongooseModule } from '@nestjs/mongoose';
 import { Policy, PolicyDocument, PolicySchema } from './schemas/policy.schema';
-import { Role, RoleSchema } from '../role/schemas/role.schema';
-import { User, UserSchema } from '../user/schemas/user.schema';
 import { Connection, Model } from 'mongoose';
 import { PolicyController } from './policy.controller';
+import { UserModule } from '../user/user.module';
+import { RoleModule } from '../role/role.module';
 
 @Module({
     imports: [
         DiscoveryModule,
+        UserModule,
+        RoleModule,
         MongooseModule.forFeature([
             { name: Policy.name, schema: PolicySchema },
-            { name: Role.name, schema: RoleSchema },
-            { name: User.name, schema: UserSchema },
         ])
     ],
     controllers: [PolicyController],
     providers: [PolicyService],
-    exports: [PolicyService],
+    exports: [PolicyService, MongooseModule],
 })
 export class PolicyModule implements OnModuleInit {
     constructor(

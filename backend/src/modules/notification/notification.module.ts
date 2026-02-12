@@ -14,6 +14,6 @@ import { NotificationTemplate, NotificationTemplateSchema } from './schemas/noti
     ],
     controllers: [NotificationController],
     providers: [NotificationService],
-    exports: [NotificationService],
+    exports: [NotificationService, MongooseModule],
 })
 export class NotificationModule {}

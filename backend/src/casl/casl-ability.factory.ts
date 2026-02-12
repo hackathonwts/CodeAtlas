@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { AbilityBuilder, createMongoAbility, ExtractSubjectType, InferSubjects, MongoAbility } from '@casl/ability';
 import { User } from "src/modules/user/schemas/user.schema";
 import { Project } from "src/modules/project/schemas/project.schema";
-import { UserRoleEnum } from "src/modules/role/schemas/role.schema";
-import { IAuthUser } from "src/modules/auth/user.repository";
+import { IAuthUser } from "src/modules/auth/auth.repository";
 import { IPolicy } from "src/modules/policy/policy.interface";
 
 type Subjects = InferSubjects<typeof Project | typeof User> | 'all';

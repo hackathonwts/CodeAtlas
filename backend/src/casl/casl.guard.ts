@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Unauthor
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityFactory } from './casl-ability.factory';
 import { CHECK_ABILITY, RequiredRule } from './casl.decorator';
-import { IAuthUser } from 'src/modules/auth/user.repository';
+import { IAuthUser } from 'src/modules/auth/auth.repository';
 
 @Injectable()
 export class CaslGuard implements CanActivate {

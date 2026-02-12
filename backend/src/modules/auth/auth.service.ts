@@ -9,14 +9,14 @@ import { CreateUserDto } from 'src/modules/user/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { ADMIN_AUTH_TOKEN_NAME } from 'src/common/constants';
 import { Role, RoleDocument, UserRoleEnum } from 'src/modules/role/schemas/role.schema';
-import { UserRepository } from './user.repository';
+import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
         @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
-        private readonly userRepository: UserRepository,
+        private readonly userRepository: AuthRepository,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
     ) { }
